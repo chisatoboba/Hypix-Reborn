@@ -109,6 +109,10 @@ button.r:active{box-shadow:none}
 select{max-width:100%}
 img{max-width:100%}
 
+/* header mengecil di tab selain Beranda supaya isi tab langsung terlihat */
+body[data-tab]:not([data-tab="beranda"]) .hero>:not(h1){display:none!important}
+body[data-tab]:not([data-tab="beranda"]) .hero{padding:18px 16px 40px}
+body[data-tab]:not([data-tab="beranda"]) h1{font-size:1.8rem}
 footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 #note,main>p{color:var(--mu)}
 </style></head><body><main>
@@ -164,8 +168,9 @@ const SUPABASE_URL='https://phfffrlkuhojqsbonbkl.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoZmZmcmxrdWhvanFzYm9uYmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODM1ODcsImV4cCI6MjEwOTc1OTU4N30.dm8rnyXsMDXU3k_Xt-pQHor6SfbN9T0HZE6MkV78sds';
 </script>
 <script>
+addEventListener('error',e=>{const n=document.getElementById('note');if(n)n.textContent='Error: '+(e.message||'skrip gagal dimuat')});
 const $=i=>document.getElementById(i);
-function route(){const h=(location.hash||'#beranda').slice(1);const p=['beranda','rank','layanan','donasi','admin'].includes(h)?h:'beranda';document.querySelectorAll('[data-p]').forEach(e=>e.hidden=e.dataset.p!==p||(p==='admin'&&!window.CAN));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p))}
+function route(){const h=(location.hash||'#beranda').slice(1);const p=['beranda','rank','layanan','donasi','admin'].includes(h)?h:'beranda';document.body.dataset.tab=p;document.querySelectorAll('[data-p]').forEach(e=>e.hidden=e.dataset.p!==p||(p==='admin'&&!window.CAN));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p))}
 addEventListener('hashchange',route);route();
 document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();try{history.replaceState(null,'',a.getAttribute('href'))}catch(x){location.hash=a.getAttribute('href')}route();window.scrollTo(0,0)}));
 let user=null,me=null,site={},roles=[],staff=[],prof={},isOwner=false,canEdit=false;
@@ -205,11 +210,4 @@ function renderStaff(){
 
 const supa=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{flowType:'pkce'}});
 let allp=[];
-const roleSelect=v=>{const s=document.createElement('select');roles.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name;if(r.id===v)o.selected=true;s.appendChild(o)});return s};
-const run=async p=>{const {error}=await p;if(error)alert('Gagal: '+error.message);await load()};
-function renderPanel(){
-  const role=me&&roleOf(me.role_id);
-  setText($('who'),me?(me.name||'Anggota')+' · '+(role?role.name:'Pengunjung'):'');
-  $('lg').textContent=user?'Keluar':'Masuk';
-  window.CAN=canEdit;$('nav_admin').hidden=!canEdit;$('ed').hidden=!canEdit;route();
-  if(canEdit&&!$('
+const roleSelect=v=>{const s=document.createElement('select');roles.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.
