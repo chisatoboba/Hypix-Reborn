@@ -163,16 +163,19 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <h2 style="margin-top:20px">Atur staf</h2><div id="sl"></div>
 <div class="row"><input type="text" id="sq" placeholder="Cari nama akun"><button class="g" id="sb">Cari</button></div><div id="sr"></div>
 </div></div>
-<footer>© Hypix Reborn · Bukan produk resmi Mojang/Microsoft · v3</footer>
+<footer>© Hypix Reborn · Bukan produk resmi Mojang/Microsoft · v4 · <span id="dbg">js:mati</span></footer>
 <p class="mu" id="note" style="text-align:center;font-size:.85rem"></p>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
+<script>window.supabase||document.write('<script src="https://fastly.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"><\/script>')</script>
+<script>window.supabase||document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"><\/script>')</script>
 <script>
 const SUPABASE_URL='https://phfffrlkuhojqsbonbkl.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoZmZmcmxrdWhvanFzYm9uYmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODM1ODcsImV4cCI6MjEwOTc1OTU4N30.dm8rnyXsMDXU3k_Xt-pQHor6SfbN9T0HZE6MkV78sds';
 </script>
 <script>
-addEventListener('error',e=>{const n=document.getElementById('note');if(n)n.textContent='Error: '+(e.message||'skrip gagal dimuat')});
+document.getElementById('dbg').textContent='js:ok';
+addEventListener('error',e=>{const d=document.getElementById('dbg');if(d)d.textContent+=' ERR:'+(e.message||'?')+'@'+e.lineno;const n=document.getElementById('note');if(n)n.textContent='Error: '+(e.message||'skrip gagal dimuat')});
 const $=i=>document.getElementById(i);
 function route(){const h=(location.hash||'#beranda').slice(1);const p=['beranda','rank','layanan','donasi','admin'].includes(h)?h:'beranda';document.body.dataset.tab=p;document.querySelectorAll('[data-p]').forEach(e=>e.hidden=e.dataset.p!==p||(p==='admin'&&!window.CAN));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p))}
 addEventListener('hashchange',route);route();
@@ -201,10 +204,4 @@ function renderSite(){
 }
 function roleOf(id){return roles.find(r=>r.id===id)}
 function renderStaff(){
-  const box=$('staff');box.textContent='';
-  const sorted=[...roles].sort((a,b)=>a.rank-b.rank);let any=false;
-  sorted.forEach(r=>{
-    const m=staff.filter(s=>s.roleId===r.id);if(!m.length)return;any=true;
-    const d=document.createElement('div');d.className='row';
-    const t=document.createElement('span');t.className='tag';t.textContent=r.name;d.appendChild(t);
-    const n=document.createElement('span');n.textContent=m.map(s=>(prof[s.id]&&prof[s.id].name)||'Anggota').join(', ')
+  
