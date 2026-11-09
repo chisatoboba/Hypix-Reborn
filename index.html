@@ -125,12 +125,7 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <div class="ip"><code id="ip">IP segera hadir</code><button id="cp" hidden>Salin</button></div>
 <div id="status" class="mu"></div><p><a id="dc" hidden target="_blank" rel="noopener">Gabung Discord</a></p>
 <div class="row" style="justify-content:center"><span id="who" class="mu"></span><button class="g" id="lg">Masuk</button><button class="g" id="ed" hidden>Edit website</button></div>
-<div class="card" id="login" hidden style="text-align:left;max-width:420px;margin:14px auto"><h2>Masuk atau daftar</h2>
-<button id="dcb" hidden style="width:100%;margin-bottom:6px">Masuk dengan Discord</button>
-<label>Nama (untuk daftar)</label><input type="text" id="l_name" style="width:100%">
-<label>Email</label><input type="text" id="l_mail" inputmode="email" autocomplete="email" style="width:100%">
-<label>Password</label><input type="password" id="l_pw" autocomplete="current-password" style="width:100%">
-<div class="row"><button id="lin">Masuk</button><button class="g" id="lup">Daftar</button></div><div class="mu" id="lmsg"></div></div></div>
+</div>
 <nav id="nav"><a href="#beranda"><i>🏠</i><span>Beranda</span></a><a href="#rank"><i>👑</i><span>Rank</span></a><a href="#layanan"><i>🛠️</i><span>Layanan</span></a><a href="#donasi"><i>💎</i><span>Donasi</span></a><a href="#admin" id="nav_admin" hidden><i>⚙️</i><span>Admin</span></a></nav>
 <div data-p="beranda" id="beranda"><div id="feat" class="grid"></div><div class="card"><h2>Cara bergabung</h2><ol id="steps" class="mu"></ol></div><div class="card"><h2>Aturan</h2><pre id="rules" class="mu">Aturan belum ditulis.</pre></div>
 <div class="card"><h2>Tim Staf</h2><div id="staff" class="mu">Belum ada staf.</div></div>
@@ -166,9 +161,6 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <footer>© Hypix Reborn · Bukan produk resmi Mojang/Microsoft · v4 · <span id="dbg">js:mati</span></footer>
 <p class="mu" id="note" style="text-align:center;font-size:.85rem"></p>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
-<script>window.supabase||document.write('<script src="https://fastly.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"><\/script>')</script>
-<script>window.supabase||document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"><\/script>')</script>
 <script>
 const SUPABASE_URL='https://phfffrlkuhojqsbonbkl.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoZmZmcmxrdWhvanFzYm9uYmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODM1ODcsImV4cCI6MjEwOTc1OTU4N30.dm8rnyXsMDXU3k_Xt-pQHor6SfbN9T0HZE6MkV78sds';
@@ -204,4 +196,20 @@ function renderSite(){
 }
 function roleOf(id){return roles.find(r=>r.id===id)}
 function renderStaff(){
-  
+  const box=$('staff');box.textContent='';
+  const sorted=[...roles].sort((a,b)=>a.rank-b.rank);let any=false;
+  sorted.forEach(r=>{
+    const m=staff.filter(s=>s.roleId===r.id);if(!m.length)return;any=true;
+    const d=document.createElement('div');d.className='row';
+    const t=document.createElement('span');t.className='tag';t.textContent=r.name;d.appendChild(t);
+    const n=document.createElement('span');n.textContent=m.map(s=>(prof[s.id]&&prof[s.id].name)||'Anggota').join(', ');d.appendChild(n);box.appendChild(d);
+  });
+  if(!any)box.textContent='Belum ada staf.';
+}
+
+function miniSupa(url,key){
+ const SK='hypix-session';let session=null;const subs=[];
+ try{session=JSON.parse(localStorage.getItem(SK)||'null')}catch(e){}
+ const save=x=>{session=x;try{x?localStorage.setItem(SK,JSON.stringify(x)):localStorage.removeItem(SK)}catch(e){}};
+ const emit=ev=>subs.forEach(f=>{try{f(ev,session)}catch(e){}});
+ const norm=d=>({access_token:d.access_token,refresh_token:d.refresh_token,expires_at:d.expires_at||Math.floor(Date.now()/1000)+(d.expires_in|
