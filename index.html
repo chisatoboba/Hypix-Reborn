@@ -129,6 +129,7 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <nav id="nav"><a href="#beranda"><i>🏠</i><span>Beranda</span></a><a href="#rank"><i>👑</i><span>Rank</span></a><a href="#layanan"><i>🛠️</i><span>Layanan</span></a><a href="#donasi"><i>💎</i><span>Donasi</span></a><a href="#admin" id="nav_admin" hidden><i>⚙️</i><span>Admin</span></a></nav>
 <div data-p="beranda" id="beranda"><div id="feat" class="grid"></div><div class="card"><h2>Cara bergabung</h2><ol id="steps" class="mu"></ol></div><div class="card"><h2>Aturan</h2><pre id="rules" class="mu">Aturan belum ditulis.</pre></div>
 <div class="card"><h2>Tim Staf</h2><div id="staff" class="mu">Belum ada staf.</div></div>
+<div class="card"><h2>Investor</h2><div id="inv" class="mu">Belum ada investor.</div></div>
 
 <div class="card"><h2>Pertanyaan umum</h2><div id="faq"></div></div></div>
 <div data-p="rank" id="rank"><div class="card"><h2>Rank</h2><div id="ranks" class="grid"></div></div></div>
@@ -158,7 +159,7 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <h2 style="margin-top:20px">Atur staf</h2><div id="sl"></div>
 <div class="row"><input type="text" id="sq" placeholder="Cari nama akun"><button class="g" id="sb">Cari</button></div><div id="sr"></div>
 </div></div>
-<footer>© Hypix Reborn · Bukan produk resmi Mojang/Microsoft<span id="dbg"></span></footer>
+<footer>© Hypix Reborn · Bukan produk resmi Mojang/Microsoft · v8 · <span id="dbg">js:mati</span></footer>
 <p class="mu" id="note" style="text-align:center;font-size:.85rem"></p>
 </main>
 <script>
@@ -196,15 +197,18 @@ function renderSite(){
 }
 function roleOf(id){return roles.find(r=>r.id===id)}
 function renderStaff(){
-  const box=$('staff');box.textContent='';
-  const sorted=[...roles].sort((a,b)=>a.rank-b.rank);let any=false;
+  const box=$('staff'),ibox=$('inv');box.textContent='';ibox.textContent='';
+  const sorted=[...roles].sort((a,b)=>a.rank-b.rank);let any=false,anyInv=false;
   sorted.forEach(r=>{
-    const m=staff.filter(s=>s.roleId===r.id);if(!m.length)return;any=true;
+    const m=staff.filter(s=>s.roleId===r.id);if(!m.length)return;
+    const isInv=r.name.trim().toLowerCase()==='investor';
     const d=document.createElement('div');d.className='row';
     const t=document.createElement('span');t.className='tag';t.textContent=r.name;d.appendChild(t);
-    const n=document.createElement('span');n.textContent=m.map(s=>(prof[s.id]&&prof[s.id].name)||'Anggota').join(', ');d.appendChild(n);box.appendChild(d);
+    const n=document.createElement('span');n.textContent=m.map(s=>(prof[s.id]&&prof[s.id].name)||'Anggota').join(', ');d.appendChild(n);
+    if(isInv){anyInv=true;ibox.appendChild(d)}else{any=true;box.appendChild(d)}
   });
   if(!any)box.textContent='Belum ada staf.';
+  if(!anyInv)ibox.textContent='Belum ada investor.';
 }
 
 function miniSupa(url,key){
