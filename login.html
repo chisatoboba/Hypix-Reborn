@@ -129,6 +129,10 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 #lmsg{min-height:1.5em;margin-top:12px;text-align:center}
 #lmsg.bad{color:var(--redstone)}
 .back{display:block;text-align:center;margin-top:18px}
+.or{display:flex;align-items:center;gap:10px;margin:16px 0 0;color:var(--mu);font-size:.85rem}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--bd)}
+#dcb{width:100%;margin-top:14px;background:#5865f2;color:#fff;box-shadow:0 3px 0 #3a43b0}
+#dcb:active{box-shadow:none}
 </style>
 </head><body>
 <main>
@@ -139,6 +143,8 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <label for="l_mail">Email</label><input type="text" id="l_mail" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
 <label for="l_pw">Password</label><input type="password" id="l_pw" autocomplete="current-password">
 <button id="go" type="button">Masuk</button>
+<div class="or"><span>atau</span></div>
+<button id="dcb" type="button">Lanjut dengan Discord</button>
 <div id="lmsg" class="mu"></div>
 </div>
 <a class="back" href="index.html">Kembali ke beranda</a>
@@ -196,7 +202,21 @@ function miniSupa(url,key){
   async signOut(){if(session)await call('/auth/v1/logout',{method:'POST',headers:H(session.access_token)});save(null);emit('SIGNED_OUT');return{error:null}},
   async getSession(){await fresh();return{data:{session},error:null}},
   onAuthStateChange(f){subs.push(f);return{data:{subscription:{unsubscribe(){}}}}},
-  async signInWithOAuth(){return{error:{message:'Login Discord belum diaktifkan.'}}}};
+  async signInWithOAuth(o){
+   const to=(o&&o.redirectTo)||location.href.split('#')[0].split('?')[0];
+   location.href=url+'/auth/v1/authorize?provider='+encodeURIComponent(o.provider)+'&redirect_to='+encodeURIComponent(to);
+   return{error:null}},
+  async sessionFromUrl(){
+   const raw=location.hash.replace(/^#/,'')||location.search.replace(/^\?/,'');
+   if(!raw)return{data:null,error:null};
+   const p=new URLSearchParams(raw);
+   const clean=()=>{try{history.replaceState(null,'',location.pathname)}catch(e){}};
+   if(p.get('error')||p.get('error_description')){clean();return{data:null,error:{message:(p.get('error_description')||p.get('error')).replace(/\+/g,' ')}}}
+   const at=p.get('access_token');if(!at)return{data:null,error:null};
+   const u=await call('/auth/v1/user',{headers:H(at)});
+   if(u.error){clean();return{data:null,error:u.error}}
+   save(norm({access_token:at,refresh_token:p.get('refresh_token'),expires_in:+p.get('expires_in')||3600,expires_at:+p.get('expires_at')||0,user:u.data}));
+   clean();emit('SIGNED_IN');return{data:{session},error:null}}};
  return{from,auth}}
 const supa=miniSupa(SUPABASE_URL,SUPABASE_ANON_KEY);
 let mode='in';
@@ -228,6 +248,11 @@ async function kirim(){
 }
 $('go').onclick=kirim;
 $('l_pw').addEventListener('keydown',e=>{if(e.key==='Enter')kirim()});
-supa.auth.getSession().then(r=>{if(r.data.session)lanjut()});
+$('dcb').onclick=async()=>{msg('Mengalihkan ke Discord...');const r=await supa.auth.signInWithOAuth({provider:'discord'});if(r.error)msg(r.error.message,true)};
+(async()=>{
+ const cb=await supa.auth.sessionFromUrl();
+ if(cb.error){msg(ramah(cb.error.message),true);return}
+ const r=await supa.auth.getSession();if(r.data.session)lanjut();
+})();
 </script>
 </body></html>
