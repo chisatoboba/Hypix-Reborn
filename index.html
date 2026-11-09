@@ -181,5 +181,5 @@ $('lg').onclick=async()=>{if(user){await supa.auth.signOut()}else{$('login').hid
 $('dcb').onclick=()=>supa.auth.signInWithOAuth({provider:'discord',options:{redirectTo:location.origin+location.pathname}});
 $('lin').onclick=async()=>{const {error}=await supa.auth.signInWithPassword({email:$('l_mail').value.trim(),password:$('l_pw').value});setText($('lmsg'),error?'Gagal masuk: '+error.message:'');if(!error)$('login').hidden=true};
 $('lup').onclick=async()=>{const {error}=await supa.auth.signUp({email:$('l_mail').value.trim(),password:$('l_pw').value,options:{data:{name:$('l_name').value.trim()}}});setText($('lmsg'),error?error.message:'Berhasil daftar. Jika diminta, cek email untuk konfirmasi lalu masuk.')};
-supa.auth.onAuthStateChange(()=>load());
+supa.auth.onAuthStateChange(()=>{setTimeout(load,0)});
 </script></body></html>
