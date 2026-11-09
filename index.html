@@ -2,6 +2,7 @@
 <html lang="id"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hypix Reborn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0f1115;--card:#1a1d24;--tx:#eef0f4;--mu:#9aa1ae;--ac:#4ade80;--bd:#2b303b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f6f8;--card:#fff;--tx:#14171c;--mu:#5b6370;--ac:#15803d;--bd:#dde1e7}}
@@ -39,8 +40,58 @@ nav{flex-wrap:wrap}
 input,select,textarea,button,img{max-width:100%}
 pre,.card,.f,summary,#ip,code{overflow-wrap:anywhere;word-break:break-word}
 h1{font-size:clamp(1.7rem,8vw,2.6rem)}
+
+html:root:not([data-x]){--ac:#55ff55;--bg:#2b1d12;--tx:#fff;--card:#c6c6c6;--mu:#555;--bd:#000}
+body{font-family:'VT323',ui-monospace,Menlo,monospace;font-size:21px;line-height:1.2;color:#fff;background-color:#3a2716;
+background-image:radial-gradient(#4a321c 3px,transparent 3px),radial-gradient(#2a1b0e 3px,transparent 3px),radial-gradient(#5a3d22 2px,transparent 2px);
+background-size:32px 32px,32px 32px,32px 32px;background-position:0 0,16px 16px,8px 24px}
+main{padding-top:14px}
+h1,h2,nav a,button,.tag,.pr,.f b,summary{font-family:'Press Start 2P',ui-monospace,monospace;font-weight:400}
+.hero{border-radius:0;border:4px solid #000;border-bottom:18px solid #5fa83a;box-shadow:0 18px 0 #7a4f26,0 18px 0 4px #000;margin-bottom:34px;overflow:hidden;
+background:linear-gradient(#5aa9e6,#9fd3f7);padding:30px 12px 22px;position:relative}
+.hero::before{content:"";position:absolute;top:16px;left:6%;width:14px;height:14px;background:#fff;opacity:.92;
+box-shadow:14px 0 #fff,28px 0 #fff,42px 0 #fff,14px -14px #fff,28px -14px #fff,56px 0 #fff,-14px 0 #fff}
+.hero::after{content:"";position:absolute;top:60px;right:8%;width:12px;height:12px;background:#fff;opacity:.85;
+box-shadow:12px 0 #fff,24px 0 #fff,36px 0 #fff,12px -12px #fff,24px -12px #fff,48px 0 #fff}
+.hero>*{position:relative;z-index:1}
+.creeper{display:block;margin:0 auto 12px;image-rendering:pixelated;border:4px solid #000;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+h1{font-size:clamp(1.05rem,6.2vw,1.9rem);line-height:1.4;color:#fff;background:none;-webkit-text-fill-color:#fff;text-shadow:4px 4px 0 #3f3f3f;letter-spacing:0}
+.hero .mu,.hero p,.hero #status{color:#fff;text-shadow:2px 2px 0 #3f3f3f}
+.hero #status{display:inline-block;background:#000;padding:4px 12px;margin-top:10px;text-shadow:none}
+.badges .tag,.tag{background:#000;color:#ffaa00;border:2px solid #ffaa00;border-radius:0;font-size:10px;padding:6px 8px;text-shadow:2px 2px 0 #3f3f3f}
+.ip code,code{background:#000;color:#55ff55;border:3px solid #8b8b8b;border-radius:0;font-family:'VT323',monospace;font-size:26px;letter-spacing:1px;padding:6px 14px;text-shadow:2px 2px 0 #153d15}
+button,#dc{font-size:11px;line-height:1.4;color:#fff;background:#8b8b8b;border:3px solid #000;border-radius:0;padding:11px 14px;
+box-shadow:inset 3px 3px 0 #c6c6c6,inset -3px -3px 0 #555;text-shadow:2px 2px 0 #3f3f3f;text-decoration:none;display:inline-block}
+button:hover,#dc:hover{background:#7a86c4;box-shadow:inset 3px 3px 0 #aab4ee,inset -3px -3px 0 #4a5390}
+button:active{box-shadow:inset 3px 3px 0 #555,inset -3px -3px 0 #c6c6c6}
+button:not(.g):not(.r){background:#5d9b3a;box-shadow:inset 3px 3px 0 #8fd35f,inset -3px -3px 0 #2f5a1c}
+button:not(.g):not(.r):hover{background:#6fb347}
+button.g{background:#8b8b8b;color:#fff;border:3px solid #000}
+button.r{background:#b33a3a;box-shadow:inset 3px 3px 0 #e07070,inset -3px -3px 0 #6b1d1d;color:#fff}
+#dc{background:#5865f2;box-shadow:inset 3px 3px 0 #8b94ff,inset -3px -3px 0 #3a43b0}
+nav{background:#1d1209;border:4px solid #000;border-radius:0;padding:8px;gap:6px;margin-bottom:12px}
+nav a{font-size:9px;line-height:1.4;color:#fff;background:#8b8b8b;border:3px solid #000;border-radius:0;padding:10px 9px;
+box-shadow:inset 3px 3px 0 #c6c6c6,inset -3px -3px 0 #555;text-shadow:2px 2px 0 #3f3f3f}
+nav a.on{background:#5d9b3a;box-shadow:inset 3px 3px 0 #8fd35f,inset -3px -3px 0 #2f5a1c;outline:3px solid #fff;outline-offset:1px;font-weight:400}
+.card{background:#c6c6c6;color:#2b2b2b;border:4px solid #000;border-radius:0;box-shadow:inset 4px 4px 0 #fff,inset -4px -4px 0 #7b7b7b,6px 6px 0 rgba(0,0,0,.35);padding:18px 16px}
+.card .mu,.card pre{color:#4a4a4a}
+.card h2{font-size:12px;line-height:1.6;color:#3f3f3f;margin-bottom:12px}
+#svc>h2{color:#fff;text-shadow:3px 3px 0 #3f3f3f;margin:26px 0 10px;font-size:13px}
+.grid .card{transition:none}.grid .card:hover{transform:none;background:#d3d3d3}
+.f b{font-size:11px;line-height:1.6;color:#2f6f1f;margin-bottom:8px}
+.pr{color:#a86400;font-size:11px}
+.shots img{border:3px solid #000;border-radius:0}
+label{color:#3f3f3f}
+input,textarea,select{background:#111;color:#fff;border:3px solid #8b8b8b;border-radius:0;font-family:'VT323',monospace;font-size:21px;padding:8px 10px}
+input:focus,textarea:focus,select:focus{outline:3px solid #fff;outline-offset:0}
+details{border-top:3px solid #8b8b8b;padding:12px 0}summary{font-size:11px;line-height:1.6;color:#2b2b2b}
+ol{padding-left:26px}li{margin:8px 0}
+#login{background:#c6c6c6}
+a{color:#55ff55}.card a{color:#1a5fb4}
+footer,#note,main>p{color:#d9c29b;text-shadow:2px 2px 0 #000;font-size:19px}
 </style></head><body><main>
-<div class="hero"><div class="badges" id="badges"></div><h1>⛏️ Hypix Reborn</h1><div class="mu" id="tag">Server Minecraft komunitas</div>
+<div class="hero"><div class="badges" id="badges"></div><svg class="creeper" viewBox="0 0 8 8" width="76" height="76" shape-rendering="crispEdges" aria-hidden="true"><rect width="8" height="8" fill="#4caf3a"/><path fill="#6fcf55" d="M0 0h2v1H0zM5 0h3v1H5zM3 1h2v1H3zM0 4h1v2H0zM7 3h1v3H7zM1 7h1v1H1z"/><path fill="#0b2a0b" d="M1 2h2v2H1zM5 2h2v2H5zM3 4h2v1H3zM2 5h4v2H2zM2 7h1v1H2zM5 7h1v1H5z"/></svg>
+<h1>Hypix Reborn</h1><div class="mu" id="tag">Server Minecraft komunitas</div>
 <div class="ip"><code id="ip">IP segera hadir</code><button id="cp" hidden>Salin</button></div>
 <div id="status" class="mu"></div><p><a id="dc" hidden target="_blank" rel="noopener">Gabung Discord</a></p>
 <div class="row" style="justify-content:center"><span id="who" class="mu"></span><button class="g" id="lg">Masuk</button><button class="g" id="ed" hidden>Edit website</button></div>
@@ -50,7 +101,7 @@ h1{font-size:clamp(1.7rem,8vw,2.6rem)}
 <label>Email</label><input type="text" id="l_mail" inputmode="email" autocomplete="email" style="width:100%">
 <label>Password</label><input type="password" id="l_pw" autocomplete="current-password" style="width:100%">
 <div class="row"><button id="lin">Masuk</button><button class="g" id="lup">Daftar</button></div><div class="mu" id="lmsg"></div></div></div>
-<nav id="nav"><a href="#beranda">Beranda</a><a href="#rank">Rank</a><a href="#layanan">Layanan</a><a href="#donasi">Donasi</a><a href="#admin" id="nav_admin" hidden>Admin</a></nav>
+<nav id="nav"><a href="#beranda">🏠 Beranda</a><a href="#rank">👑 Rank</a><a href="#layanan">🛠️ Layanan</a><a href="#donasi">💎 Donasi</a><a href="#admin" id="nav_admin" hidden>⚙️ Admin</a></nav>
 <div data-p="beranda"><div id="feat" class="grid"></div><div class="card"><h2>Cara bergabung</h2><ol id="steps" class="mu"></ol></div><div class="card"><h2>Aturan</h2><pre id="rules" class="mu">Aturan belum ditulis.</pre></div>
 <div class="card"><h2>Tim Staf</h2><div id="staff" class="mu">Belum ada staf.</div></div>
 
@@ -153,43 +204,4 @@ function renderPanel(){
   staff.forEach(m=>{
     const d=document.createElement('div');d.className='row';
     const n=document.createElement('span');n.textContent=(prof[m.id]&&prof[m.id].name)||'Anggota';
-    const sel=roleSelect(m.roleId);sel.onchange=()=>run(supa.from('profiles').update({role_id:sel.value}).eq('id',m.id));
-    const x=document.createElement('button');x.className='r';x.textContent='Cabut';x.onclick=()=>run(supa.from('profiles').update({role_id:null}).eq('id',m.id));
-    d.append(n,sel,x);sl.appendChild(d)});
-}
-async function load(){
-  try{
-    const [s,r,p,ss]=await Promise.all([supa.from('site').select('data').eq('id','main').maybeSingle(),supa.from('roles').select('*').order('rank'),supa.from('profiles').select('*'),supa.auth.getSession()]);
-    if(s.error||r.error||p.error)throw 0;
-    site=(s.data&&s.data.data)||{};
-    roles=r.data.map(x=>({id:x.id,name:x.name,rank:x.rank,canEdit:x.can_edit}));
-    allp=p.data;prof=Object.fromEntries(allp.map(x=>[x.id,{name:x.name}]));
-    staff=allp.filter(x=>x.role_id).map(x=>({id:x.id,roleId:x.role_id}));
-    user=ss.data.session&&ss.data.session.user;me=user&&allp.find(x=>x.id===user.id);
-    const role=me&&roleOf(me.role_id);isOwner=!!me&&me.role_id==='founder';canEdit=!!(role&&role.canEdit);
-    renderSite();renderStaff();renderPanel();setText($('note'),'');
-  }catch(e){setText($('note'),'Data gagal dimuat. Cek config.js dan skrip schema.sql.')}
-}
-$('cp').onclick=async()=>{try{await navigator.clipboard.writeText(site.ip);$('cp').textContent='Tersalin'}catch(e){$('cp').textContent='Salin manual'}setTimeout(()=>$('cp').textContent='Salin',1500)};
-$('nav').after($('panel'));
-$('ed').onclick=()=>{const p=$('panel');p.hidden=!p.hidden;$('ed').textContent=p.hidden?'Edit website':'Tutup edit';if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'});
-  $('f_tag').value=site.tagline||'';$('f_ip').value=site.ip||'';$('f_dc').value=site.discord||'';$('f_rules').value=site.rules||'';$('f_ver').value=site.version||'';$('f_mode').value=site.mode||'';$('f_feat').value=site.features||'';$('f_steps').value=site.steps||'';$('f_faq').value=site.faq||'';$('f_stat').value=site.status||'';$('f_pl').value=site.players||'';$('f_ranks').value=site.ranks||'';$('f_don').value=site.donasi||'';$('f_svc').value=site.services||'';$('f_order').value=site.order||''};
-
-$('save').onclick=()=>run(supa.from('site').upsert({id:'main',data:{tagline:$('f_tag').value,ip:$('f_ip').value.trim(),discord:$('f_dc').value.trim(),rules:$('f_rules').value,version:$('f_ver').value.trim(),mode:$('f_mode').value.trim(),features:$('f_feat').value,steps:$('f_steps').value,faq:$('f_faq').value,status:$('f_stat').value.trim(),players:$('f_pl').value.trim(),ranks:$('f_ranks').value,donasi:$('f_don').value,services:$('f_svc').value,order:$('f_order').value}}));
-$('ar').onclick=()=>{const n=$('nr').value.trim();if(!n)return;$('nr').value='';run(supa.from('roles').insert({id:'r'+Date.now().toString(36),name:n,rank:roles.reduce((a,r)=>Math.max(a,r.rank||0),0)+1,can_edit:false}))};
-$('sb').onclick=()=>{
-  const q=$('sq').value.trim().toLowerCase(),out=$('sr');out.textContent='';
-  const hits=allp.filter(p=>!p.role_id&&(p.name||'').toLowerCase().includes(q)).slice(0,8);
-  if(!hits.length){out.textContent='Tidak ditemukan.';return}
-  hits.forEach(h=>{const d=document.createElement('div');d.className='row';
-    const n=document.createElement('span');n.textContent=h.name||'Anggota';
-    const sel=roleSelect(roles.length?roles[roles.length-1].id:'');
-    const b=document.createElement('button');b.textContent='Jadikan staf';
-    b.onclick=()=>run(supa.from('profiles').update({role_id:sel.value}).eq('id',h.id));
-    d.append(n,sel,b);out.appendChild(d)})};
-$('lg').onclick=async()=>{if(user){await supa.auth.signOut()}else{$('login').hidden=!$('login').hidden}};
-$('dcb').onclick=()=>supa.auth.signInWithOAuth({provider:'discord',options:{redirectTo:location.origin+location.pathname}});
-$('lin').onclick=async()=>{const {error}=await supa.auth.signInWithPassword({email:$('l_mail').value.trim(),password:$('l_pw').value});setText($('lmsg'),error?'Gagal masuk: '+error.message:'');if(!error)$('login').hidden=true};
-$('lup').onclick=async()=>{const {error}=await supa.auth.signUp({email:$('l_mail').value.trim(),password:$('l_pw').value,options:{data:{name:$('l_name').value.trim()}}});setText($('lmsg'),error?error.message:'Berhasil daftar. Jika diminta, cek email untuk konfirmasi lalu masuk.')};
-supa.auth.onAuthStateChange(()=>{setTimeout(load,0)});
-</script></body></html>
+    const sel=roleSelect(m.roleId);sel.onc
