@@ -124,7 +124,7 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <h1>Hypix Reborn</h1><div class="mu" id="tag">Server Minecraft komunitas</div>
 <div class="ip"><code id="ip">IP segera hadir</code><button id="cp" hidden>Salin</button></div>
 <div id="status" class="mu"></div><p><a id="dc" hidden target="_blank" rel="noopener">Gabung Discord</a></p>
-<div class="row" style="justify-content:center"><span id="who" class="mu"></span><button class="g" id="lg">Masuk</button><button class="g" id="ed" hidden>Edit website</button></div>
+<div class="row" style="justify-content:center"><span id="who" class="mu"></span><button class="g" id="lg">Masuk</button></div>
 </div>
 <nav id="nav"><a href="#beranda"><i>🏠</i><span>Beranda</span></a><a href="#rank"><i>👑</i><span>Rank</span></a><a href="#layanan"><i>🛠️</i><span>Layanan</span></a><a href="#donasi"><i>💎</i><span>Donasi</span></a><a href="#admin" id="nav_admin" hidden><i>⚙️</i><span>Admin</span></a></nav>
 <div data-p="beranda" id="beranda"><div id="feat" class="grid"></div><div class="card"><h2>Cara bergabung</h2><ol id="steps" class="mu"></ol></div><div class="card"><h2>Aturan</h2><pre id="rules" class="mu">Aturan belum ditulis.</pre></div>
@@ -158,7 +158,7 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <h2 style="margin-top:20px">Atur staf</h2><div id="sl"></div>
 <div class="row"><input type="text" id="sq" placeholder="Cari nama akun"><button class="g" id="sb">Cari</button></div><div id="sr"></div>
 </div></div>
-<footer>© Hypix Reborn · Bukan produk resmi Mojang/Microsoft · v5-home · <span id="dbg">js:mati</span></footer>
+<footer>© Hypix Reborn · Bukan produk resmi Mojang/Microsoft · v6 · <span id="dbg">js:mati</span></footer>
 <p class="mu" id="note" style="text-align:center;font-size:.85rem"></p>
 </main>
 <script>
@@ -263,7 +263,7 @@ function renderPanel(){
   const role=me&&roleOf(me.role_id);
   setText($('who'),me?(me.name||'Anggota')+' · '+(role?role.name:'Pengunjung'):'');
   $('lg').textContent=user?'Keluar':'Masuk';
-  window.CAN=canEdit;$('nav_admin').hidden=!canEdit;$('ed').hidden=!canEdit;route();
+  window.CAN=canEdit;$('nav_admin').hidden=!canEdit;route();
   if(canEdit&&!$('panel').contains(document.activeElement))[['f_tag','tagline'],['f_ip','ip'],['f_dc','discord'],['f_rules','rules'],['f_ver','version'],['f_mode','mode'],['f_feat','features'],['f_steps','steps'],['f_faq','faq'],['f_stat','status'],['f_pl','players'],['f_ranks','ranks'],['f_don','donasi'],['f_svc','services'],['f_order','order']].forEach(([i,k])=>{$(i).value=site[k]||''});
   $('fo').hidden=!isOwner;if(!isOwner)return;
   const rl=$('rl');rl.textContent='';
@@ -301,7 +301,6 @@ async function load(){
 }
 $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(site.ip);$('cp').textContent='Tersalin'}catch(e){$('cp').textContent='Salin manual'}setTimeout(()=>$('cp').textContent='Salin',1500)};
 $('nav').after($('panel'));
-$('ed').onclick=()=>{history.replaceState(null,'','#admin');route();window.scrollTo(0,0)};
 
 $('save').onclick=async()=>{const {error}=await supa.from('site').upsert({id:'main',data:{tagline:$('f_tag').value,ip:$('f_ip').value.trim(),discord:$('f_dc').value.trim(),rules:$('f_rules').value,version:$('f_ver').value.trim(),mode:$('f_mode').value.trim(),features:$('f_feat').value,steps:$('f_steps').value,faq:$('f_faq').value,status:$('f_stat').value.trim(),players:$('f_pl').value.trim(),ranks:$('f_ranks').value,donasi:$('f_don').value,services:$('f_svc').value,order:$('f_order').value}});setText($('msg'),error?'Gagal: '+error.message:'Tersimpan ✓');await load();setTimeout(()=>setText($('msg'),''),2500)};
 $('ar').onclick=()=>{const n=$('nr').value.trim();if(!n)return;$('nr').value='';run(supa.from('roles').insert({id:'r'+Date.now().toString(36),name:n,rank:roles.reduce((a,r)=>Math.max(a,r.rank||0),0)+1,can_edit:false}))};
