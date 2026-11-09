@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tes JS</title>
+<style>body{font:18px/1.6 system-ui,sans-serif;padding:20px;background:#fff;color:#111}
+.b{padding:12px;border-radius:10px;margin:10px 0;border:2px solid #999}
+.ok{background:#d8f5d0;border-color:#3f9f2c}.no{background:#fbdcdc;border-color:#c52f35}
+button{font:inherit;padding:12px 18px}</style></head><body>
+<h2>Tes browser</h2>
+<div id="js" class="b no">1. JavaScript: MATI (tidak jalan)</div>
+<div id="fetch" class="b">2. Koneksi ke Supabase: belum dites</div>
+<div id="ls" class="b">3. Penyimpanan (localStorage): belum dites</div>
+<button id="btn" type="button">Tekan aku</button>
+<div id="clk" class="b">4. Tombol: belum ditekan</div>
+<p id="ua" style="font-size:12px;color:#555"></p>
+<script>
+var $=function(i){return document.getElementById(i)};
+$('js').className='b ok';$('js').textContent='1. JavaScript: JALAN';
+$('ua').textContent=navigator.userAgent;
+$('btn').onclick=function(){$('clk').className='b ok';$('clk').textContent='4. Tombol: BERFUNGSI'};
+try{localStorage.setItem('t','1');localStorage.removeItem('t');$('ls').className='b ok';$('ls').textContent='3. localStorage: BISA'}
+catch(e){$('ls').className='b no';$('ls').textContent='3. localStorage: DIBLOKIR ('+e.message+')'}
+fetch('https://phfffrlkuhojqsbonbkl.supabase.co/auth/v1/health',{headers:{apikey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoZmZmcmxrdWhvanFzYm9uYmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODM1ODcsImV4cCI6MjEwOTc1OTU4N30.dm8rnyXsMDXU3k_Xt-pQHor6SfbN9T0HZE6MkV78sds'}})
+.then(function(r){$('fetch').className='b '+(r.ok?'ok':'no');$('fetch').textContent='2. Supabase: '+(r.ok?'TERHUBUNG':'HTTP '+r.status)})
+.catch(function(e){$('fetch').className='b no';$('fetch').textContent='2. Supabase: GAGAL TERHUBUNG ('+e.message+')'});
+</script>
+<noscript><div class="b no">JavaScript dimatikan di browser ini.</div></noscript>
+</body></html>
