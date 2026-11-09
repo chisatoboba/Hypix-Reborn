@@ -41,7 +41,7 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <label>Email</label><input type="text" id="l_mail" inputmode="email" autocomplete="email" style="width:100%">
 <label>Password</label><input type="password" id="l_pw" autocomplete="current-password" style="width:100%">
 <div class="row"><button id="lin">Masuk</button><button class="g" id="lup">Daftar</button></div><div class="mu" id="lmsg"></div></div></div>
-<nav id="nav"><a href="#beranda">Beranda</a><a href="#rank">Rank</a><a href="#layanan">Layanan</a><a href="#donasi">Donasi</a></nav>
+<nav id="nav"><a href="#beranda">Beranda</a><a href="#rank">Rank</a><a href="#layanan">Layanan</a><a href="#donasi">Donasi</a><a href="#admin" id="nav_admin" hidden>Admin</a></nav>
 <div data-p="beranda"><div id="feat" class="grid"></div><div class="card"><h2>Cara bergabung</h2><ol id="steps" class="mu"></ol></div><div class="card"><h2>Aturan</h2><pre id="rules" class="mu">Aturan belum ditulis.</pre></div>
 <div class="card"><h2>Tim Staf</h2><div id="staff" class="mu">Belum ada staf.</div></div>
 
@@ -49,8 +49,8 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <div data-p="rank" hidden><div class="card"><h2>Rank</h2><div id="ranks" class="grid"></div></div></div>
 <div data-p="layanan" hidden><div class="card"><h2>Layanan &amp; Jasa</h2><p class="mu" id="order" style="white-space:pre-wrap"></p></div><div id="svc"></div></div>
 <div data-p="donasi" hidden><div class="card"><h2>Donasi</h2><p class="mu" id="don" style="white-space:pre-wrap"></p></div></div>
-<div class="card" id="panel" hidden>
-<h2>Panel edit</h2>
+<div class="card" data-p="admin" id="panel" hidden>
+<h2>Panel admin</h2>
 <label>Versi (contoh: Java 1.21 &amp; Bedrock)</label><input type="text" id="f_ver">
 <label>Mode game (contoh: Survival, Minigames)</label><input type="text" id="f_mode">
 <label>Fitur (satu baris: Judul | Deskripsi)</label><textarea id="f_feat"></textarea>
@@ -80,7 +80,7 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <script src="config.js"></script>
 <script>
 const $=i=>document.getElementById(i);
-function route(){const h=(location.hash||'#beranda').slice(1);const p=['beranda','rank','layanan','donasi'].includes(h)?h:'beranda';document.querySelectorAll('[data-p]').forEach(e=>e.hidden=e.dataset.p!==p);document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p))}
+function route(){const h=(location.hash||'#beranda').slice(1);const p=['beranda','rank','layanan','donasi','admin'].includes(h)?h:'beranda';document.querySelectorAll('[data-p]').forEach(e=>e.hidden=e.dataset.p!==p||(p==='admin'&&!window.CAN));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p))}
 addEventListener('hashchange',route);route();
 let assets=null,gal=[],db=null,user=null,site={},roles=[],staff=[],prof={},isOwner=false,canEdit=false,myId=null;
 const esc=s=>String(s==null?'':s);
@@ -125,7 +125,8 @@ function renderPanel(){
   const role=me&&roleOf(me.role_id);
   setText($('who'),me?(me.name||'Anggota')+' · '+(role?role.name:'Pengunjung'):'');
   $('lg').textContent=user?'Keluar':'Masuk';
-  $('ed').hidden=!canEdit;if(!canEdit)$('panel').hidden=true;
+  window.CAN=canEdit;$('nav_admin').hidden=!canEdit;route();
+  if(canEdit&&!$('panel').contains(document.activeElement))[['f_tag','tagline'],['f_ip','ip'],['f_dc','discord'],['f_rules','rules'],['f_ver','version'],['f_mode','mode'],['f_feat','features'],['f_steps','steps'],['f_faq','faq'],['f_stat','status'],['f_pl','players'],['f_ranks','ranks'],['f_don','donasi'],['f_svc','services'],['f_order','order']].forEach(([i,k])=>{$(i).value=site[k]||''});
   $('fo').hidden=!isOwner;if(!isOwner)return;
   const rl=$('rl');rl.textContent='';
   roles.forEach(r=>{
