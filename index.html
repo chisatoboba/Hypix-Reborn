@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- v11 -->
 <html lang="id"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hypix Reborn</title>
@@ -165,7 +166,7 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <div class="row"><input type="text" id="m_name" placeholder="Username (mis. Steve_123)" maxlength="32"><select id="m_role"></select><button id="m_add">Tambah</button></div>
 <div id="m_list" class="mu"></div>
 </div></div>
-<footer>© Hypix Reborn · Bukan resmi Mojang/Microsoft · Manage By Chisatoboba<span id="dbg"></span></footer>
+<footer>© Hypix Reborn · Bukan resmi Mojang/Microsoft · Manage By Chisatoboba</footer>
 <p class="mu" id="note" style="text-align:center;font-size:.85rem"></p>
 </main>
 <script>
@@ -173,8 +174,7 @@ const SUPABASE_URL='https://phfffrlkuhojqsbonbkl.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoZmZmcmxrdWhvanFzYm9uYmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODM1ODcsImV4cCI6MjEwOTc1OTU4N30.dm8rnyXsMDXU3k_Xt-pQHor6SfbN9T0HZE6MkV78sds';
 </script>
 <script>
-document.getElementById('dbg').textContent='js:ok';
-addEventListener('error',e=>{const d=document.getElementById('dbg');if(d)d.textContent+=' ERR:'+(e.message||'?')+'@'+e.lineno;const n=document.getElementById('note');if(n)n.textContent='Error: '+(e.message||'skrip gagal dimuat')});
+addEventListener('error',e=>{const n=document.getElementById('note');if(n)n.textContent='Error: '+(e.message||'skrip gagal dimuat')});
 const $=i=>document.getElementById(i);
 function route(){const h=(location.hash||'#beranda').slice(1);const p=['beranda','rank','layanan','donasi','admin'].includes(h)?h:'beranda';document.body.dataset.tab=p;document.querySelectorAll('[data-p]').forEach(e=>e.hidden=e.dataset.p!==p||(p==='admin'&&!window.CAN));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p))}
 addEventListener('hashchange',route);route();
@@ -264,7 +264,6 @@ function miniSupa(url,key){
   onAuthStateChange(f){subs.push(f);return{data:{subscription:{unsubscribe(){}}}}},
   async signInWithOAuth(){return{error:{message:'Login Discord belum diaktifkan.'}}}};
  return{from,auth}}
-document.getElementById('dbg').textContent+=' lib:mini';
 const supa=miniSupa(SUPABASE_URL,SUPABASE_ANON_KEY);
 let allp=[];
 const parseManual=()=>(site.manual||'').split('\n').map(s=>s.trim()).filter(Boolean).map(l=>{const i=l.indexOf('|');return{roleId:l.slice(0,i).trim(),name:l.slice(i+1).trim()}}).filter(x=>x.roleId&&x.name);
@@ -368,5 +367,4 @@ $('sb').onclick=cariStaf;
 $('lg').onclick=async()=>{if(user){await supa.auth.signOut()}else{location.href='login.html'}};
 load();
 supa.auth.onAuthStateChange(()=>{setTimeout(load,0)});
-document.getElementById('dbg').textContent+=' end';
 </script></body></html>
