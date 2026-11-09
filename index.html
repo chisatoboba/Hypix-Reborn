@@ -30,6 +30,15 @@ ol{padding-left:22px;margin:0}li{margin:6px 0;padding-left:4px}
 details{border-top:1px solid var(--bd);padding:10px 0}details:first-child{border-top:0}summary{cursor:pointer;font-weight:600}details div{margin-top:6px}
 .shots img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;display:block}.pr{font-weight:700;color:var(--ac);margin:2px 0 6px}
 footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
+html{overflow-x:hidden;overscroll-behavior-x:none;-webkit-text-size-adjust:100%;max-width:100%}
+body{max-width:100vw;overscroll-behavior-x:none}
+main,.card,.hero,nav{max-width:100%}
+nav{flex-wrap:wrap}
+.grid{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
+.row>*{min-width:0}
+input,select,textarea,button,img{max-width:100%}
+pre,.card,.f,summary,#ip,code{overflow-wrap:anywhere;word-break:break-word}
+h1{font-size:clamp(1.7rem,8vw,2.6rem)}
 </style></head><body><main>
 <div class="hero"><div class="badges" id="badges"></div><h1>⛏️ Hypix Reborn</h1><div class="mu" id="tag">Server Minecraft komunitas</div>
 <div class="ip"><code id="ip">IP segera hadir</code><button id="cp" hidden>Salin</button></div>
