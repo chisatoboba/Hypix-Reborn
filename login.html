@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#151a24">
+<title>Masuk · Hypix Reborn</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Pixelify+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#151a24;--bg2:#1b2230;--card:#202938;--card2:#2a3446;--tx:#f1f4f9;--mu:#a3aec2;--bd:#34415a;
+--ac:#6fcf55;--ac-d:#3f8f2f;--on-ac:#0d2a08;--diamond:#4fd8d0;--gold:#f2b632;--redstone:#e5484d;--dirt:#8a5a34;--iron:#c9d1dc;
+--grid:rgba(255,255,255,.04);--glow1:rgba(111,207,85,.20);--glow2:rgba(79,216,208,.14);
+--pix:'Pixelify Sans',ui-monospace,Menlo,Consolas,monospace;--ui:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#e6f0f7;--bg2:#d9e7f1;--card:#fff;--card2:#eef4f9;--tx:#122033;--mu:#546378;--bd:#c9d8e5;
+--ac:#3f9f2c;--ac-d:#2b7320;--on-ac:#fff;--diamond:#0e8f8a;--gold:#a8710a;--redstone:#c52f35;--iron:#667386;--grid:rgba(18,32,51,.05);--glow1:rgba(111,207,85,.25);--glow2:rgba(79,216,208,.2);color-scheme:light}}
+:root[data-theme="light"]{--bg:#e6f0f7;--bg2:#d9e7f1;--card:#fff;--card2:#eef4f9;--tx:#122033;--mu:#546378;--bd:#c9d8e5;
+--ac:#3f9f2c;--ac-d:#2b7320;--on-ac:#fff;--diamond:#0e8f8a;--gold:#a8710a;--redstone:#c52f35;--iron:#667386;--grid:rgba(18,32,51,.05);--glow1:rgba(111,207,85,.25);--glow2:rgba(79,216,208,.2);color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{overflow-x:hidden;overscroll-behavior-x:none;-webkit-text-size-adjust:100%;max-width:100%;scroll-padding-top:12px}
+body{margin:0;max-width:100vw;color:var(--tx);font:16px/1.6 var(--ui);background-color:var(--bg);
+background-image:radial-gradient(700px 380px at 10% -4%,var(--glow1),transparent 65%),radial-gradient(600px 360px at 95% 0,var(--glow2),transparent 65%),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+background-size:auto,auto,40px 40px,40px 40px}
+main{max-width:720px;margin:0 auto;padding:16px 16px calc(120px + env(safe-area-inset-bottom,0px))}
+main,.card,.hero,nav{max-width:100%}
+.mu{color:var(--mu)}
+pre{white-space:pre-wrap;margin:0;font:inherit}
+pre,.card,.f,summary,#ip,code{overflow-wrap:anywhere;word-break:break-word}
+a{color:var(--ac)}
+h1,h2,summary,.tag,.pr,.f b,nav a span{font-family:var(--pix);font-weight:600}
+
+/* ===== Hero ===== */
+.hero{position:relative;text-align:center;padding:30px 16px 52px;border:1px solid var(--bd);border-radius:24px;overflow:hidden;
+background:linear-gradient(180deg,color-mix(in srgb,var(--diamond) 14%,var(--card)),var(--card) 62%)}
+.hero>*{position:relative;z-index:1}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22px;
+background:repeating-linear-gradient(90deg,rgba(0,0,0,.14) 0 11px,transparent 11px 22px),
+linear-gradient(var(--ac) 0 6px,var(--ac-d) 6px 9px,var(--dirt) 9px)}
+.logo{display:block;width:92px;height:92px;margin:0 auto 6px;filter:drop-shadow(0 12px 14px rgba(0,0,0,.4));animation:fl 4.5s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.logo{animation:none}}
+h1{margin:0;font-size:clamp(2.1rem,10vw,3.3rem);line-height:1.05;letter-spacing:.5px;color:var(--tx);text-shadow:0 3px 0 rgba(0,0,0,.28)}
+#tag{margin-top:8px;font-size:1.02rem}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.badges:empty{display:none}
+.tag{display:inline-block;padding:3px 11px;border-radius:8px;font-size:.88rem;line-height:1.4;color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,transparent);border:1px solid color-mix(in srgb,var(--ac) 45%,transparent)}
+.ip{display:flex;gap:10px;justify-content:center;align-items:stretch;flex-wrap:wrap;margin-top:18px}
+code{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:1.05rem;font-weight:600;color:var(--ac);background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:10px 16px;box-shadow:inset 0 2px 0 rgba(0,0,0,.25)}
+code::before{content:"> ";color:var(--mu)}
+#status{display:inline-block;margin-top:14px;padding:4px 14px;border-radius:99px;background:var(--bg);border:1px solid var(--bd);font-size:.95rem}
+#status:empty{display:none}
+.hero p{margin:14px 0 0}
+#dc{display:inline-block;padding:11px 18px;border-radius:12px;background:#5865f2;color:#fff;font-weight:600;text-decoration:none;box-shadow:0 3px 0 #3a43b0}
+#dc:active{transform:translateY(3px);box-shadow:none}
+.hero .row{justify-content:center;margin-top:16px}
+#login{text-align:left;margin:16px auto 0;background:var(--bg2)}
+
+/* ===== Navigasi bawah ===== */
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:100;display:flex;gap:2px;width:min(calc(100% - 24px),460px);padding:6px;
+background:color-mix(in srgb,var(--card) 86%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--bd);border-radius:20px;box-shadow:0 12px 32px rgba(0,0,0,.35);touch-action:manipulation}
+nav a{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 7px;border-radius:14px;color:var(--mu);text-decoration:none;cursor:pointer;touch-action:manipulation}
+nav a i{font-style:normal;font-size:19px;line-height:1}
+nav a span{font-size:11px;line-height:1.2}
+nav a.on{color:var(--tx);background:color-mix(in srgb,var(--ac) 22%,transparent);box-shadow:inset 0 -3px 0 var(--ac)}
+
+/* ===== Kartu ===== */
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px;margin:14px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 10px 24px -14px rgba(0,0,0,.55)}
+h2{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:1.25rem;line-height:1.2}
+h2::before{content:"";flex:none;width:12px;height:12px;background:var(--ac);box-shadow:inset -3px -3px 0 var(--ac-d),inset 2px 2px 0 rgba(255,255,255,.35)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:12px;margin:14px 0}
+.grid .card{margin:0}
+.f{--mat:var(--ac);position:relative;overflow:hidden;padding-top:22px}
+.f::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:var(--mat);box-shadow:inset 0 -2px 0 rgba(0,0,0,.25)}
+.f b{display:block;margin-bottom:4px;font-size:1.05rem;color:var(--tx)}
+.pr{display:inline-block;margin:0 0 6px;font-size:1.05rem;color:var(--mat)}
+#ranks .f:nth-child(5n+1){--mat:var(--iron)}
+#ranks .f:nth-child(5n+2){--mat:var(--gold)}
+#ranks .f:nth-child(5n+3){--mat:var(--diamond)}
+#ranks .f:nth-child(5n+4){--mat:var(--ac)}
+#ranks .f:nth-child(5n){--mat:var(--redstone)}
+#svc>h2{margin:24px 2px 4px}
+ol{list-style:none;counter-reset:s;padding:0;margin:0}
+li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;margin:10px 0}
+li::before{content:counter(s);flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:6px;background:var(--ac);color:var(--on-ac);font:600 15px/1 var(--pix);box-shadow:0 3px 0 var(--ac-d)}
+details{border-top:1px solid var(--bd);padding:2px 0}details:first-child{border-top:0}
+summary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;cursor:pointer;list-style:none;font-size:1.02rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";flex:none;width:8px;height:8px;border:solid var(--mu);border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .15s}
+details[open]>summary::after{transform:rotate(-135deg)}
+details div{padding:0 0 12px}
+
+/* ===== Form & tombol ===== */
+label{display:block;margin:14px 0 5px;color:var(--mu);font-size:.9rem}
+button,input,textarea,select{font:inherit;color:var(--tx)}
+input,textarea,select{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:11px 12px;font-size:16px}
+textarea,input[type=text],input[type=password]{width:100%}
+textarea{min-height:110px}
+input[type=checkbox]{width:22px;height:22px;padding:0;accent-color:var(--ac)}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,nav a:focus-visible,summary:focus-visible,#dc:focus-visible{outline:2px solid var(--diamond);outline-offset:2px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.row>*{min-width:0}
+.row input[type=text]{flex:1;min-width:120px}
+button{cursor:pointer;border:0;border-radius:12px;padding:11px 18px;font-weight:600;line-height:1.2;color:var(--on-ac);background:var(--ac);box-shadow:0 3px 0 var(--ac-d);touch-action:manipulation}
+button:active{transform:translateY(3px);box-shadow:0 0 0 var(--ac-d)}
+button.g{background:var(--card2);color:var(--tx);border:1px solid var(--bd);box-shadow:0 3px 0 var(--bd)}
+button.g:active{box-shadow:none}
+button.r{background:var(--redstone);color:#fff;box-shadow:0 3px 0 color-mix(in srgb,var(--redstone) 55%,#000)}
+button.r:active{box-shadow:none}
+select{max-width:100%}
+img{max-width:100%}
+
+/* header mengecil di tab selain Beranda supaya isi tab langsung terlihat */
+body[data-tab]:not([data-tab="beranda"]) .hero>:not(h1){display:none!important}
+body[data-tab]:not([data-tab="beranda"]) .hero{padding:18px 16px 40px}
+body[data-tab]:not([data-tab="beranda"]) h1{font-size:1.8rem}
+/* cadangan tanpa JavaScript: tab tetap berpindah lewat #hash */
+body:not([data-tab]) [data-p="rank"],body:not([data-tab]) [data-p="layanan"],body:not([data-tab]) [data-p="donasi"]{display:none}
+body:not([data-tab]):has(:target) [data-p="beranda"]{display:none}
+body:not([data-tab]) [data-p]:target{display:block}
+footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
+#note,main>p{color:var(--mu)}
+</style>
+<style>
+.hero{padding-bottom:46px}
+.tabs{display:flex;gap:8px;margin-bottom:4px}
+.tabs button{flex:1}
+.tabs button.on{background:var(--ac);color:var(--on-ac);border-color:transparent;box-shadow:0 3px 0 var(--ac-d)}
+#go{width:100%;margin-top:16px}
+#lmsg{min-height:1.5em;margin-top:12px;text-align:center}
+#lmsg.bad{color:var(--redstone)}
+.back{display:block;text-align:center;margin-top:18px}
+</style>
+</head><body>
+<main>
+<div class="hero"><svg class="logo" viewBox="0 0 64 64" shape-rendering="crispEdges" aria-hidden="true"><polygon points="32,4 58,18 32,32 6,18" fill="#7bd95f"/><polygon points="32,4 58,18 32,32 6,18" fill="none" stroke="#a6ee8a" stroke-width="1"/><polygon points="6,18 32,32 32,62 6,48" fill="#8a5a34"/><polygon points="32,32 58,18 58,48 32,62" fill="#6a4226"/><polygon points="6,18 32,32 32,40 28,40 28,37 22,34 22,38 14,34 14,30 6,26" fill="#4aa83a"/><polygon points="32,32 58,18 58,25 50,29 50,34 44,37 44,34 38,38 38,36 32,40" fill="#3a8a2d"/><g fill="#a37045"><rect x="10" y="40" width="4" height="4"/><rect x="20" y="48" width="4" height="4"/><rect x="24" y="42" width="3" height="3"/></g><g fill="#4f301a"><rect x="38" y="46" width="4" height="4"/><rect x="48" y="38" width="4" height="4"/><rect x="42" y="54" width="3" height="3"/></g></svg><h1>Hypix Reborn</h1><div class="mu" id="tag">Masuk atau buat akun</div></div>
+<div class="card" style="margin-top:16px">
+<div class="tabs"><button class="g on" id="tm" type="button">Masuk</button><button class="g" id="td" type="button">Daftar</button></div>
+<div id="nm" hidden><label for="l_name">Nama</label><input type="text" id="l_name" autocomplete="nickname"></div>
+<label for="l_mail">Email</label><input type="text" id="l_mail" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
+<label for="l_pw">Password</label><input type="password" id="l_pw" autocomplete="current-password">
+<button id="go" type="button">Masuk</button>
+<div id="lmsg" class="mu"></div>
+</div>
+<a class="back" href="index.html">Kembali ke beranda</a>
+</main>
+<script>
+const SUPABASE_URL='https://phfffrlkuhojqsbonbkl.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoZmZmcmxrdWhvanFzYm9uYmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODM1ODcsImV4cCI6MjEwOTc1OTU4N30.dm8rnyXsMDXU3k_Xt-pQHor6SfbN9T0HZE6MkV78sds';
+</script>
+<script>
+const $=i=>document.getElementById(i);
+const msg=(t,bad)=>{const m=$('lmsg');m.textContent=t||'';m.classList.toggle('bad',!!bad)};
+addEventListener('error',e=>msg('Error: '+(e.message||'skrip gagal'),true));
+function miniSupa(url,key){
+ const SK='hypix-session';let session=null;const subs=[];
+ try{session=JSON.parse(localStorage.getItem(SK)||'null')}catch(e){}
+ const save=x=>{session=x;try{x?localStorage.setItem(SK,JSON.stringify(x)):localStorage.removeItem(SK)}catch(e){}};
+ const emit=ev=>subs.forEach(f=>{try{f(ev,session)}catch(e){}});
+ const norm=d=>({access_token:d.access_token,refresh_token:d.refresh_token,expires_at:d.expires_at||Math.floor(Date.now()/1000)+(d.expires_in||3600),user:d.user});
+ const H=(tok)=>({apikey:key,Authorization:'Bearer '+(tok||key),'Content-Type':'application/json'});
+ async function call(path,opt){
+  try{const r=await fetch(url+path,opt);const t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(e){j=t}
+   if(!r.ok)return{data:null,error:{message:(j&&(j.message||j.msg||j.error_description||j.error))||('HTTP '+r.status),status:r.status}};
+   return{data:j,error:null}}
+  catch(e){return{data:null,error:{message:'Tidak bisa terhubung ke Supabase ('+e.message+')'}}}}
+ async function fresh(){
+  if(session&&session.refresh_token&&session.expires_at&&session.expires_at*1000<Date.now()+30000){
+   const r=await call('/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:H(),body:JSON.stringify({refresh_token:session.refresh_token})});
+   if(r.error){save(null);emit('SIGNED_OUT')}else save(norm(r.data))}}
+ function from(table){
+  const q={m:'GET',params:[],body:null,prefer:[],single:false,cols:'*'};
+  const o={
+   select(c){q.cols=c||'*';return o},
+   eq(c,v){q.params.push(c+'=eq.'+encodeURIComponent(v));return o},
+   order(c){q.params.push('order='+encodeURIComponent(c)+'.asc');return o},
+   maybeSingle(){q.single=true;return Promise.resolve(o.then(x=>x))},
+   update(b){q.m='PATCH';q.body=b;return o},
+   delete(){q.m='DELETE';return o},
+   insert(b){q.m='POST';q.body=b;return o},
+   upsert(b){q.m='POST';q.body=b;q.prefer.push('resolution=merge-duplicates');return o},
+   then(res,rej){return exec().then(res,rej)}};
+  async function exec(){
+   await fresh();const ps=q.params.slice();
+   if(q.m==='GET'){ps.unshift('select='+encodeURIComponent(q.cols));if(q.single)ps.push('limit=1')}
+   const h=H(session&&session.access_token);
+   if(q.m!=='GET')h.Prefer=['return=minimal'].concat(q.prefer).join(',');
+   const r=await call('/rest/v1/'+table+(ps.length?'?'+ps.join('&'):''),{method:q.m,headers:h,body:q.body?JSON.stringify(q.body):undefined});
+   if(!r.error&&q.single)r.data=Array.isArray(r.data)?(r.data[0]||null):r.data;
+   return r}
+  return o}
+ const auth={
+  async signInWithPassword(c){const r=await call('/auth/v1/token?grant_type=password',{method:'POST',headers:H(),body:JSON.stringify({email:c.email,password:c.password})});
+   if(r.error)return{data:null,error:r.error};save(norm(r.data));emit('SIGNED_IN');return{data:{session},error:null}},
+  async signUp(c){const r=await call('/auth/v1/signup',{method:'POST',headers:H(),body:JSON.stringify({email:c.email,password:c.password,data:(c.options&&c.options.data)||{}})});
+   if(r.error)return{data:null,error:r.error};if(r.data&&r.data.access_token){save(norm(r.data));emit('SIGNED_IN')}return{data:r.data,error:null}},
+  async signOut(){if(session)await call('/auth/v1/logout',{method:'POST',headers:H(session.access_token)});save(null);emit('SIGNED_OUT');return{error:null}},
+  async getSession(){await fresh();return{data:{session},error:null}},
+  onAuthStateChange(f){subs.push(f);return{data:{subscription:{unsubscribe(){}}}}},
+  async signInWithOAuth(){return{error:{message:'Login Discord belum diaktifkan.'}}}};
+ return{from,auth}}
+const supa=miniSupa(SUPABASE_URL,SUPABASE_ANON_KEY);
+let mode='in';
+function setMode(m){mode=m;$('nm').hidden=m!=='up';$('go').textContent=m==='up'?'Daftar':'Masuk';
+ $('tm').classList.toggle('on',m==='in');$('td').classList.toggle('on',m==='up');
+ $('l_pw').autocomplete=m==='up'?'new-password':'current-password';msg('')}
+$('tm').onclick=()=>setMode('in');$('td').onclick=()=>setMode('up');
+const ramah=t=>/invalid login/i.test(t)?'Email atau password salah.':/already registered|already been registered/i.test(t)?'Email sudah terdaftar. Silakan masuk.':/not confirmed/i.test(t)?'Email belum dikonfirmasi. Cek kotak masuk emailmu.':/rate limit/i.test(t)?'Terlalu banyak percobaan. Coba lagi beberapa menit lagi.':t;
+async function lanjut(){
+ let admin=false;
+ try{
+  const s=(await supa.auth.getSession()).data.session;
+  const pr=await supa.from('profiles').select('role_id').eq('id',s.user.id).maybeSingle();
+  if(pr.data&&pr.data.role_id){const rl=await supa.from('roles').select('can_edit').eq('id',pr.data.role_id).maybeSingle();admin=!!(rl.data&&rl.data.can_edit)}
+ }catch(e){}
+ location.href='index.html'+(admin?'#admin':'');
+}
+async function kirim(){
+ const email=$('l_mail').value.trim(),password=$('l_pw').value;
+ if(!email||!password){msg('Isi email dan password.',true);return}
+ if(mode==='up'&&password.length<6){msg('Password minimal 6 karakter.',true);return}
+ $('go').disabled=true;msg('Memproses...');
+ const r=mode==='up'?await supa.auth.signUp({email,password,options:{data:{name:$('l_name').value.trim()}}}):await supa.auth.signInWithPassword({email,password});
+ $('go').disabled=false;
+ if(r.error){msg(ramah(r.error.message),true);return}
+ const s=(await supa.auth.getSession()).data.session;
+ if(s){msg('Berhasil! Mengalihkan...');await lanjut()}
+ else{setMode('in');msg('Pendaftaran berhasil. Cek emailmu untuk konfirmasi, lalu masuk.')}
+}
+$('go').onclick=kirim;
+$('l_pw').addEventListener('keydown',e=>{if(e.key==='Enter')kirim()});
+supa.auth.getSession().then(r=>{if(r.data.session)lanjut()});
+</script>
+</body></html>
