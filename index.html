@@ -156,10 +156,12 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <div id="fo" hidden>
 <h2 style="margin-top:20px">Kelola role (khusus founder)</h2><div id="rl"></div>
 <div class="row"><input type="text" id="nr" placeholder="Nama role baru"><button id="ar">Tambah role</button></div>
+</div>
+<div id="as" hidden>
 <h2 style="margin-top:20px">Atur staf</h2><div id="sl"></div>
 <div class="row"><input type="text" id="sq" placeholder="Cari nama akun"><button class="g" id="sb">Cari</button></div><div id="sr"></div>
 </div></div>
-<footer>© Hypix Reborn · Bukan produk resmi Mojang/Microsoft · v8 · <span id="dbg">js:mati</span></footer>
+<footer>© Hypix Reborn · Bukan produk resmi Mojang/Microsoft · v9 · <span id="dbg">js:mati</span></footer>
 <p class="mu" id="note" style="text-align:center;font-size:.85rem"></p>
 </main>
 <script>
@@ -261,7 +263,10 @@ function miniSupa(url,key){
 document.getElementById('dbg').textContent+=' lib:mini';
 const supa=miniSupa(SUPABASE_URL,SUPABASE_ANON_KEY);
 let allp=[];
-const roleSelect=v=>{const s=document.createElement('select');roles.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name;if(r.id===v)o.selected=true;s.appendChild(o)});return s};
+const myRank=()=>{const r=me&&roleOf(me.role_id);return r?r.rank:99999};
+const allowedRoles=()=>isOwner?roles:roles.filter(r=>r.rank>myRank());
+const canManage=rid=>{if(isOwner)return true;const r=rid&&roleOf(rid);return (r?r.rank:99999)>myRank()};
+const roleSelect=v=>{const s=document.createElement('select');allowedRoles().forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name;if(r.id===v)o.selected=true;s.appendChild(o)});return s};
 const run=async p=>{const {error}=await p;if(error)alert('Gagal: '+error.message);await load()};
 function renderPanel(){
   const role=me&&roleOf(me.role_id);
@@ -269,7 +274,8 @@ function renderPanel(){
   $('lg').textContent=user?'Keluar':'Masuk';
   window.CAN=canEdit;$('nav_admin').hidden=!canEdit;route();
   if(canEdit&&!$('panel').contains(document.activeElement))[['f_tag','tagline'],['f_ip','ip'],['f_dc','discord'],['f_rules','rules'],['f_ver','version'],['f_mode','mode'],['f_feat','features'],['f_steps','steps'],['f_faq','faq'],['f_stat','status'],['f_pl','players'],['f_ranks','ranks'],['f_don','donasi'],['f_svc','services'],['f_order','order']].forEach(([i,k])=>{$(i).value=site[k]||''});
-  $('fo').hidden=!isOwner;if(!isOwner)return;
+  $('fo').hidden=!isOwner;$('as').hidden=!canEdit;
+  if(isOwner){
   const rl=$('rl');rl.textContent='';
   roles.forEach(r=>{
     const d=document.createElement('div');d.className='row';
@@ -282,14 +288,21 @@ function renderPanel(){
     if(r.id!=='founder'){const x=document.createElement('button');x.className='r';x.textContent='Hapus';
       x.onclick=()=>{if(confirm('Hapus role '+r.name+'?'))run(supa.from('roles').delete().eq('id',r.id))};d.appendChild(x)}
     rl.appendChild(d)});
-  const sl=$('sl');sl.textContent='';
-  staff.forEach(m=>{
-    const d=document.createElement('div');d.className='row';
-    const n=document.createElement('span');n.textContent=(prof[m.id]&&prof[m.id].name)||'Anggota';
-    const sel=roleSelect(m.roleId);sel.onchange=()=>run(supa.from('profiles').update({role_id:sel.value}).eq('id',m.id));
-    const x=document.createElement('button');x.className='r';x.textContent='Cabut';x.onclick=()=>run(supa.from('profiles').update({role_id:null}).eq('id',m.id));
-    if(user&&m.id===user.id){sel.disabled=true;d.append(n,sel)}else d.append(n,sel,x);sl.appendChild(d)});
-  if($('sr').children.length)cariStaf();
+  }
+  if(canEdit){
+    const sl=$('sl');sl.textContent='';
+    staff.forEach(m=>{
+      const d=document.createElement('div');d.className='row';
+      const n=document.createElement('span');n.textContent=(prof[m.id]&&prof[m.id].name)||'Anggota';
+      if((user&&m.id===user.id)||!canManage(m.roleId)){
+        const l=document.createElement('span');l.className='tag';const rr=roleOf(m.roleId);l.textContent=rr?rr.name:'-';d.append(n,l);
+      }else{
+        const sel=roleSelect(m.roleId);sel.onchange=()=>run(supa.from('profiles').update({role_id:sel.value}).eq('id',m.id));
+        const x=document.createElement('button');x.className='r';x.textContent='Cabut';x.onclick=()=>run(supa.from('profiles').update({role_id:null}).eq('id',m.id));
+        d.append(n,sel,x)}
+      sl.appendChild(d)});
+    if($('sr').children.length)cariStaf();
+  }
 }
 async function load(){
   try{
@@ -313,11 +326,13 @@ function cariStaf(){
   const q=$('sq').value.trim().toLowerCase(),out=$('sr');
   const keep={};out.querySelectorAll('select').forEach(s=>{keep[s.dataset.id]=s.value});
   out.textContent='';
-  const hits=allp.filter(p=>!p.role_id&&(p.name||'').toLowerCase().includes(q)).slice(0,8);
+  const al=allowedRoles();
+  if(!al.length){out.textContent='Pangkatmu belum bisa menambah staf (tidak ada role di bawahmu).';return}
+  const hits=allp.filter(p=>!p.role_id&&p.id!==(user&&user.id)&&(p.name||'').toLowerCase().includes(q)).slice(0,8);
   if(!hits.length){out.textContent='Tidak ditemukan.';return}
   hits.forEach(h=>{const d=document.createElement('div');d.className='row';
     const n=document.createElement('span');n.textContent=h.name||'Anggota';
-    const sel=roleSelect(keep[h.id]&&roleOf(keep[h.id])?keep[h.id]:(roles.length?roles[roles.length-1].id:''));sel.dataset.id=h.id;
+    const sel=roleSelect(keep[h.id]&&al.some(r=>r.id===keep[h.id])?keep[h.id]:al[al.length-1].id);sel.dataset.id=h.id;
     const b=document.createElement('button');b.textContent='Jadikan staf';
     b.onclick=()=>run(supa.from('profiles').update({role_id:sel.value}).eq('id',h.id));
     d.append(n,sel,b);out.appendChild(d)})}
