@@ -406,12 +406,21 @@ let payMethod='';
 function payList(){
   const a=(site.pay||'').split('\n').map(x=>x.trim()).filter(Boolean).map(l=>{const i=l.indexOf('|');return i<0?{n:l,d:''}:{n:l.slice(0,i).trim(),d:l.slice(i+1).trim()}}).filter(x=>x.n);
   return a.length?a:['DANA','GoPay','QRIS','Saweria'].map(n=>({n,d:''}))}
+function payKind(x){
+  const d=(x.d||'').trim();if(!d)return null;
+  if(/\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(d)||(/qris/i.test(x.n)&&!/\s/.test(d)))return{t:'img',v:d};
+  const f=d.split(/\s+/)[0];
+  if(/^https?:\/\//i.test(f))return{t:'url',v:f};
+  if(/saweria/i.test(x.n)&&/^(www\.)?[a-z0-9-]+\.[a-z]{2,}(\/\S*)?$/i.test(f))return{t:'url',v:'https://'+f};
+  return{t:'text',v:d}}
 function payDetail(el,m){
   el.textContent='';
-  const x=payList().find(q=>q.n===m);if(!x||!x.d)return;
-  if(/\.(png|jpe?g|webp|gif)(\?.*)?$/i.test(x.d)){const im=document.createElement('img');im.src=x.d;im.alt='QR '+m;im.style.cssText='max-width:260px;width:100%;border-radius:12px;border:1px solid var(--bd);display:block;margin-top:8px;background:#fff';el.appendChild(im)}
-  else if(/^https?:\/\//i.test(x.d)){const a=document.createElement('a');a.href=x.d;a.target='_blank';a.rel='noopener';a.textContent=x.d;el.appendChild(a)}
-  else{const t=document.createElement('div');t.style.whiteSpace='pre-wrap';t.textContent=x.d;el.appendChild(t)}}
+  const x=payList().find(q=>q.n===m);if(!x)return;
+  const k=payKind(x);
+  if(!k){const t=document.createElement('div');t.textContent='Detail pembayaran belum diisi admin.';el.appendChild(t);return}
+  if(k.t==='img'){const im=document.createElement('img');im.src=k.v;im.alt='QR '+m;im.style.cssText='max-width:260px;width:100%;border-radius:12px;border:1px solid var(--bd);display:block;margin-top:8px;background:#fff';el.appendChild(im)}
+  else if(k.t==='url'){const a=document.createElement('a');a.href=k.v;a.target='_blank';a.rel='noopener';a.textContent=k.v;el.appendChild(a)}
+  else{const t=document.createElement('div');t.style.whiteSpace='pre-wrap';t.textContent=k.v;el.appendChild(t)}}
 function toast(t){
   const o=document.getElementById('toast');if(o)o.remove();
   const d=document.createElement('div');d.id='toast';d.textContent=t;
@@ -435,11 +444,13 @@ function showQr(name,src){
   bt.onclick=close;ov.onclick=e=>{if(e.target===ov)close()};document.addEventListener('keydown',esc);
   bx.append(h,im,tt,bt);ov.appendChild(bx);document.body.appendChild(ov)}
 async function payAction(x){
-  const d=x.d||'';if(!d)return;
-  if(/\.(png|jpe?g|webp|gif)(\?.*)?$/i.test(d)){showQr(x.n,d);return}
-  if(/^https?:\/\//i.test(d)){if(!window.open(d,'_blank','noopener'))toast('Popup diblokir. Ketuk link '+x.n+' di bawah tombol.');return}
-  const m=d.match(/\+?\d[\d\s.-]{6,}\d/);
-  if(m){const num=m[0].replace(/[\s.-]/g,'');toast((await copyText(num))?'Nomor '+x.n+' disalin: '+num:'Gagal menyalin, salin manual: '+num)}}
+  const k=payKind(x);
+  if(!k){toast('Detail pembayaran '+x.n+' belum diisi di Panel Admin.');return}
+  if(k.t==='img'){showQr(x.n,k.v);return}
+  if(k.t==='url'){if(!window.open(k.v,'_blank','noopener'))toast('Popup diblokir. Ketuk link '+x.n+' di bawah tombol.');return}
+  const m=k.v.match(/\+?\d[\d\s.-]{6,}\d/);
+  if(m){const num=m[0].replace(/[\s.-]/g,'');toast((await copyText(num))?'Nomor '+x.n+' disalin: '+num:'Gagal menyalin, salin manual: '+num)}
+  else toast('Tidak ada nomor di detail '+x.n+'. Cek Panel Admin.')}
 function renderPay(){
   const box=$('o_pay');box.textContent='';const L=payList();
   if(!L.some(x=>x.n===payMethod))payMethod='';
