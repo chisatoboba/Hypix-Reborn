@@ -171,7 +171,7 @@ button.sm{padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 var(--bd)}
 <label>Rank (satu baris: Nama | Harga | Keuntungan)</label><textarea id="f_ranks"></textarea>
 <label>Key (satu baris: Nama | Harga | Isi / keterangan)</label><textarea id="f_keys"></textarea>
 <label>Info donasi / cara bayar (muncul di atas dan setelah checkout)</label><textarea id="f_don"></textarea>
-<label>Metode pembayaran (satu baris: Nama | Detail. Detail bisa nomor, link, atau alamat gambar QRIS seperti qris.png. Kosong = DANA, GoPay, QRIS, Saweria tanpa detail)</label><textarea id="f_pay" placeholder="DANA | 0812xxxx a.n. Nama&#10;GoPay | 0812xxxx a.n. Nama&#10;QRIS | qris.png&#10;Saweria | https://saweria.co/namamu"></textarea>
+<label>Metode pembayaran (satu baris: Nama | Detail. Detail bisa nomor, link, atau alamat gambar QRIS seperti qris.png. Kosong = DANA, GoPay, QRIS, Saweria tanpa detail)</label><textarea id="f_pay" placeholder="DANA | 081996112019 a.n. Nama&#10;GoPay | 081996112019 a.n. Nama&#10;QRIS | Delynnqris.jpg&#10;Saweria | https://saweria.co/hypixreborn"></textarea>
 <label>Layanan &amp; jasa (satu baris: Kategori | Nama | Harga | Deskripsi)</label><textarea id="f_svc" style="min-height:180px"></textarea>
 <label>Cara pesan layanan</label><textarea id="f_order"></textarea>
 <label>Tagline</label><input type="text" id="f_tag">
@@ -412,10 +412,38 @@ function payDetail(el,m){
   if(/\.(png|jpe?g|webp|gif)(\?.*)?$/i.test(x.d)){const im=document.createElement('img');im.src=x.d;im.alt='QR '+m;im.style.cssText='max-width:260px;width:100%;border-radius:12px;border:1px solid var(--bd);display:block;margin-top:8px;background:#fff';el.appendChild(im)}
   else if(/^https?:\/\//i.test(x.d)){const a=document.createElement('a');a.href=x.d;a.target='_blank';a.rel='noopener';a.textContent=x.d;el.appendChild(a)}
   else{const t=document.createElement('div');t.style.whiteSpace='pre-wrap';t.textContent=x.d;el.appendChild(t)}}
+function toast(t){
+  const o=document.getElementById('toast');if(o)o.remove();
+  const d=document.createElement('div');d.id='toast';d.textContent=t;
+  d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:100px;max-width:90vw;background:var(--tx);color:#fff;padding:10px 16px;border-radius:12px;z-index:1100;font-weight:600;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.25)';
+  document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);return true}catch(e){}
+  try{const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();return ok}catch(e){return false}}
+function showQr(name,src){
+  const old=document.getElementById('qrm');if(old)old.remove();
+  const ov=document.createElement('div');ov.id='qrm';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px';
+  const bx=document.createElement('div');bx.className='card';bx.style.cssText='max-width:380px;width:100%;max-height:92vh;overflow:auto;text-align:center';
+  const h=document.createElement('h2');h.textContent='Bayar dengan '+name;
+  const im=document.createElement('img');im.src=src;im.alt='QR '+name;im.style.cssText='width:100%;max-width:340px;border-radius:12px;border:1px solid var(--bd);background:#fff';
+  im.onerror=()=>{im.remove();const e=document.createElement('p');e.textContent='Gambar QRIS tidak ditemukan. Cek alamat gambar di Panel Admin.';bx.insertBefore(e,bt)};
+  const tot=cartTotal();const tt=document.createElement('p');tt.style.fontWeight='600';tt.textContent=cart.length&&tot!=null?'Total perkiraan: '+rupiah(tot):'';
+  const bt=document.createElement('button');bt.type='button';bt.style.width='100%';bt.textContent='Tutup';
+  const close=()=>{ov.remove();document.removeEventListener('keydown',esc)};
+  const esc=e=>{if(e.key==='Escape')close()};
+  bt.onclick=close;ov.onclick=e=>{if(e.target===ov)close()};document.addEventListener('keydown',esc);
+  bx.append(h,im,tt,bt);ov.appendChild(bx);document.body.appendChild(ov)}
+async function payAction(x){
+  const d=x.d||'';if(!d)return;
+  if(/\.(png|jpe?g|webp|gif)(\?.*)?$/i.test(d)){showQr(x.n,d);return}
+  if(/^https?:\/\//i.test(d)){if(!window.open(d,'_blank','noopener'))toast('Popup diblokir. Ketuk link '+x.n+' di bawah tombol.');return}
+  const m=d.match(/\+?\d[\d\s.-]{6,}\d/);
+  if(m){const num=m[0].replace(/[\s.-]/g,'');toast((await copyText(num))?'Nomor '+x.n+' disalin: '+num:'Gagal menyalin, salin manual: '+num)}}
 function renderPay(){
   const box=$('o_pay');box.textContent='';const L=payList();
   if(!L.some(x=>x.n===payMethod))payMethod='';
-  L.forEach(x=>{const b=document.createElement('button');b.type='button';b.className=payMethod===x.n?'':'g';b.textContent=x.n;b.onclick=()=>{payMethod=x.n;renderPay()};box.appendChild(b)});
+  L.forEach(x=>{const b=document.createElement('button');b.type='button';b.className=payMethod===x.n?'':'g';b.textContent=x.n;b.onclick=()=>{payMethod=x.n;renderPay();payAction(x)};box.appendChild(b)});
   payDetail($('o_pd'),payMethod)}
 const rupiah=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
 function parsePrice(t){
