@@ -115,11 +115,20 @@ body[data-tab]:not([data-tab="beranda"]) .hero>:not(h1){display:none!important}
 body[data-tab]:not([data-tab="beranda"]) .hero{padding:18px 16px 40px}
 body[data-tab]:not([data-tab="beranda"]) h1{font-size:1.8rem}
 /* cadangan tanpa JavaScript: tab tetap berpindah lewat #hash */
-body:not([data-tab]) [data-p="rank"],body:not([data-tab]) [data-p="layanan"],body:not([data-tab]) [data-p="donasi"]{display:none}
+body:not([data-tab]) [data-p="donasi"]{display:none}
 body:not([data-tab]):has(:target) [data-p="beranda"]{display:none}
 body:not([data-tab]) [data-p]:target{display:block}
 footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 #note,main>p{color:var(--mu)}
+#keys .f:nth-child(odd){--mat:var(--gold)}
+#keys .f:nth-child(even){--mat:var(--diamond)}
+.f button{margin-top:10px;width:100%}
+.ci{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--bd)}
+.ci:first-child{border-top:0}
+.ci .qt{display:flex;gap:6px;align-items:center}
+button.sm{padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 var(--bd)}
+.od{padding:10px 0;border-top:1px solid var(--bd)}
+.od:first-child{border-top:0}
 </style></head><body><main>
 <div class="hero"><div class="badges" id="badges"></div><svg class="logo" viewBox="0 0 64 64" shape-rendering="crispEdges" aria-hidden="true"><polygon points="32,4 58,18 32,32 6,18" fill="#7bd95f"/><polygon points="32,4 58,18 32,32 6,18" fill="none" stroke="#a6ee8a" stroke-width="1"/><polygon points="6,18 32,32 32,62 6,48" fill="#8a5a34"/><polygon points="32,32 58,18 58,48 32,62" fill="#6a4226"/><polygon points="6,18 32,32 32,40 28,40 28,37 22,34 22,38 14,34 14,30 6,26" fill="#4aa83a"/><polygon points="32,32 58,18 58,25 50,29 50,34 44,37 44,34 38,38 38,36 32,40" fill="#3a8a2d"/><g fill="#a37045"><rect x="10" y="40" width="4" height="4"/><rect x="20" y="48" width="4" height="4"/><rect x="24" y="42" width="3" height="3"/></g><g fill="#4f301a"><rect x="38" y="46" width="4" height="4"/><rect x="48" y="38" width="4" height="4"/><rect x="42" y="54" width="3" height="3"/></g></svg>
 <h1>Hypix Reborn</h1><div class="mu" id="tag">Server Minecraft komunitas</div>
@@ -127,15 +136,28 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <div id="status" class="mu"></div><p><a id="dc" hidden target="_blank" rel="noopener">Gabung Discord</a></p>
 <div class="row" style="justify-content:center"><span id="who" class="mu"></span><button class="g" id="lg">Masuk</button></div>
 </div>
-<nav id="nav"><a href="#beranda"><i>🏠</i><span>Beranda</span></a><a href="#rank"><i>👑</i><span>Rank</span></a><a href="#layanan"><i>🛠️</i><span>Layanan</span></a><a href="#donasi"><i>💎</i><span>Donasi</span></a><a href="#admin" id="nav_admin" hidden><i>⚙️</i><span>Admin</span></a></nav>
+<nav id="nav"><a href="#beranda"><i>🏠</i><span>Beranda</span></a><a href="#donasi"><i>💎</i><span>Donasi</span></a><a href="#admin" id="nav_admin" hidden><i>⚙️</i><span>Admin</span></a></nav>
 <div data-p="beranda" id="beranda"><div id="feat" class="grid"></div><div class="card"><h2>Cara bergabung</h2><ol id="steps" class="mu"></ol></div><div class="card"><h2>Aturan</h2><pre id="rules" class="mu">Aturan belum ditulis.</pre></div>
 <div class="card"><h2>Tim Staf</h2><div id="staff" class="mu">Belum ada staf.</div></div>
 <div class="card"><h2>Investor</h2><div id="inv" class="mu">Belum ada investor.</div></div>
 
 <div class="card"><h2>Pertanyaan umum</h2><div id="faq"></div></div></div>
-<div data-p="rank" id="rank"><div class="card"><h2>Rank</h2><div id="ranks" class="grid"></div></div></div>
-<div data-p="layanan" id="layanan"><div class="card"><h2>Layanan &amp; Jasa</h2><p class="mu" id="order" style="white-space:pre-wrap"></p></div><div id="svc"></div></div>
-<div data-p="donasi" id="donasi"><div class="card"><h2>Donasi</h2><p class="mu" id="don" style="white-space:pre-wrap"></p></div></div>
+<div data-p="donasi" id="donasi">
+<div class="card"><h2>Donasi</h2><p class="mu" id="don" style="white-space:pre-wrap"></p><button class="g" id="gc">Keranjang</button></div>
+<div class="card"><h2>Rank</h2><div id="ranks" class="grid"></div></div>
+<div class="card" id="keys-card"><h2>Key</h2><div id="keys" class="grid"></div></div>
+<div class="card"><h2>Layanan &amp; Jasa</h2><p class="mu" id="order" style="white-space:pre-wrap"></p></div><div id="svc"></div>
+<div class="card" id="co"><h2>Keranjang</h2><div id="cart" class="mu"></div>
+<div id="cf" hidden>
+<label for="o_mc">Username Minecraft</label><input type="text" id="o_mc" maxlength="32" autocomplete="off" autocapitalize="off" spellcheck="false">
+<label for="o_ct">Kontak (Discord / WhatsApp)</label><input type="text" id="o_ct" maxlength="100" autocomplete="off">
+<label for="o_nt">Catatan (opsional)</label><textarea id="o_nt" maxlength="500" style="min-height:70px"></textarea>
+<div id="o_tot" style="margin-top:14px;font-weight:600"></div>
+<button id="o_go" type="button" style="width:100%;margin-top:12px">Kirim pesanan</button>
+</div>
+<div id="o_msg" class="mu" style="margin-top:12px"></div></div>
+<div class="card" id="myc" hidden><h2>Pesananmu</h2><div id="myord"></div></div>
+</div>
 <div class="card" data-p="admin" id="panel" hidden>
 <h2>Panel admin</h2>
 <label>Versi (contoh: Java 1.21 &amp; Bedrock)</label><input type="text" id="f_ver">
@@ -146,7 +168,8 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <label>Status server (Online / Offline / Maintenance)</label><input type="text" id="f_stat">
 <label>Pemain online (contoh: 12/100)</label><input type="text" id="f_pl">
 <label>Rank (satu baris: Nama | Harga | Keuntungan)</label><textarea id="f_ranks"></textarea>
-<label>Info donasi / cara beli</label><textarea id="f_don"></textarea>
+<label>Key (satu baris: Nama | Harga | Isi / keterangan)</label><textarea id="f_keys"></textarea>
+<label>Info donasi / cara bayar (muncul di atas dan setelah checkout)</label><textarea id="f_don"></textarea>
 <label>Layanan &amp; jasa (satu baris: Kategori | Nama | Harga | Deskripsi)</label><textarea id="f_svc" style="min-height:180px"></textarea>
 <label>Cara pesan layanan</label><textarea id="f_order"></textarea>
 <label>Tagline</label><input type="text" id="f_tag">
@@ -154,6 +177,7 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;margin-top:28px}
 <label>Link Discord</label><input type="text" id="f_dc" placeholder="https://discord.gg/...">
 <label>Aturan</label><textarea id="f_rules"></textarea>
 <div class="row"><button id="save">Simpan</button><span class="mu" id="msg"></span></div>
+<div id="ao" hidden><h2 style="margin-top:20px">Pesanan masuk</h2><div id="ol" class="mu">Belum ada pesanan.</div></div>
 <div id="fo" hidden>
 <h2 style="margin-top:20px">Kelola role (khusus founder)</h2><div id="rl"></div>
 <div class="row"><input type="text" id="nr" placeholder="Nama role baru"><button id="ar">Tambah role</button></div>
@@ -176,12 +200,20 @@ const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 <script>
 addEventListener('error',e=>{const n=document.getElementById('note');if(n)n.textContent='Error: '+(e.message||'skrip gagal dimuat')});
 const $=i=>document.getElementById(i);
-function route(){const h=(location.hash||'#beranda').slice(1);const p=['beranda','rank','layanan','donasi','admin'].includes(h)?h:'beranda';document.body.dataset.tab=p;document.querySelectorAll('[data-p]').forEach(e=>e.hidden=e.dataset.p!==p||(p==='admin'&&!window.CAN));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p))}
+function route(){let h=(location.hash||'#beranda').slice(1);if(h==='rank'||h==='layanan')h='donasi';const p=['beranda','donasi','admin'].includes(h)?h:'beranda';document.body.dataset.tab=p;document.querySelectorAll('[data-p]').forEach(e=>e.hidden=e.dataset.p!==p||(p==='admin'&&!window.CAN));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p))}
 addEventListener('hashchange',route);route();
 document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();try{history.replaceState(null,'',a.getAttribute('href'))}catch(x){location.hash=a.getAttribute('href')}route();window.scrollTo(0,0)}));
-let user=null,me=null,site={},roles=[],staff=[],prof={},isOwner=false,canEdit=false;
+let user=null,me=null,site={},roles=[],staff=[],prof={},isOwner=false,canEdit=false,orders=[],ordersOk=true,cart=[];
 const esc=s=>String(s==null?'':s);
 function setText(el,t){el.textContent=esc(t)}
+function prod(kind,name,price,desc){
+  const d=document.createElement('div');d.className='card f';
+  const b=document.createElement('b');b.textContent=name;
+  const pr=document.createElement('div');pr.className='pr';pr.textContent=price;
+  const t=document.createElement('div');t.className='mu';t.textContent=desc;
+  const bt=document.createElement('button');bt.type='button';bt.textContent='Tambah ke keranjang';
+  bt.onclick=()=>{addCart(kind,name,price);bt.textContent='Ditambahkan ✓';setTimeout(()=>{bt.textContent='Tambah ke keranjang'},1000)};
+  d.append(b,pr,t,bt);return d}
 function renderSite(){
   setText($('tag'),site.tagline||'Server Minecraft komunitas');
   const ip=(site.ip||'').trim();setText($('ip'),ip||'IP segera hadir');$('cp').hidden=!ip;
@@ -194,12 +226,14 @@ function renderSite(){
   const fq=$('faq');fq.textContent='';lines(site.faq).forEach(l=>{const p=l.split('|');const d=document.createElement('details');const s=document.createElement('summary');s.textContent=(p[0]||'').trim();const t=document.createElement('div');t.className='mu';t.textContent=(p[1]||'').trim();d.append(s,t);fq.appendChild(d)});
   const bd=$('badges');bd.textContent='';[site.version,site.mode].filter(Boolean).forEach(x=>{const s=document.createElement('span');s.className='tag';s.textContent=x;bd.appendChild(s)});
   const sv=$('status'),sx=(site.status||'').trim();sv.textContent=sx?'● '+sx+(site.players?' · '+site.players+' pemain':''):'';sv.style.color=/^online/i.test(sx)?'var(--ac)':'';
-  const rk=$('ranks');rk.textContent='';lines(site.ranks).forEach(l=>{const p=l.split('|');const d=document.createElement('div');d.className='card f';const h=document.createElement('b');h.textContent=(p[0]||'').trim();const pr=document.createElement('div');pr.className='pr';pr.textContent=(p[1]||'').trim();const t=document.createElement('div');t.className='mu';t.textContent=(p.slice(2).join('|')||'').trim();d.append(h,pr,t);rk.appendChild(d)});
+  const rk=$('ranks');rk.textContent='';lines(site.ranks).forEach(l=>{const p=l.split('|').map(x=>x.trim());if(p[0])rk.appendChild(prod('Rank',p[0],p[1]||'',p.slice(2).join(' | ')))});
+  const ky=$('keys');ky.textContent='';lines(site.keys).forEach(l=>{const p=l.split('|').map(x=>x.trim());if(p[0])ky.appendChild(prod('Key',p[0],p[1]||'',p.slice(2).join(' | ')))});
+  $('keys-card').hidden=!ky.children.length;
   setText($('don'),site.donasi||'');
   setText($('order'),site.order||'');
   const sv2=$('svc');sv2.textContent='';const groups=Object.create(null),cats=[];
   lines(site.services).forEach(l=>{const p=l.split('|').map(x=>x.trim());const c=p[0]||'Lainnya';if(!groups[c]){groups[c]=[];cats.push(c)}groups[c].push(p)});
-  cats.forEach(c=>{const h=document.createElement('h2');h.textContent=c;h.style.margin='18px 0 4px';const g=document.createElement('div');g.className='grid';groups[c].forEach(p=>{const d=document.createElement('div');d.className='card f';const b=document.createElement('b');b.textContent=p[1]||'';const pr=document.createElement('div');pr.className='pr';pr.textContent=p[2]||'';const t=document.createElement('div');t.className='mu';t.textContent=p.slice(3).join(' | ');d.append(b,pr,t);g.appendChild(d)});sv2.append(h,g)});
+  cats.forEach(c=>{const h=document.createElement('h2');h.textContent=c;h.style.margin='18px 0 4px';const g=document.createElement('div');g.className='grid';groups[c].forEach(p=>{if(p[1])g.appendChild(prod('Layanan',p[1],p[2]||'',p.slice(3).join(' | ')))});sv2.append(h,g)});
 }
 function roleOf(id){return roles.find(r=>r.id===id)}
 function renderStaff(){
@@ -278,7 +312,7 @@ function renderPanel(){
   setText($('who'),me?(me.name||'Anggota')+' · '+(role?role.name:'Pengunjung'):'');
   $('lg').textContent=user?'Keluar':'Masuk';
   window.CAN=canEdit;$('nav_admin').hidden=!canEdit;route();
-  if(canEdit&&!$('panel').contains(document.activeElement))[['f_tag','tagline'],['f_ip','ip'],['f_dc','discord'],['f_rules','rules'],['f_ver','version'],['f_mode','mode'],['f_feat','features'],['f_steps','steps'],['f_faq','faq'],['f_stat','status'],['f_pl','players'],['f_ranks','ranks'],['f_don','donasi'],['f_svc','services'],['f_order','order']].forEach(([i,k])=>{$(i).value=site[k]||''});
+  if(canEdit&&!$('panel').contains(document.activeElement))[['f_tag','tagline'],['f_ip','ip'],['f_dc','discord'],['f_rules','rules'],['f_ver','version'],['f_mode','mode'],['f_feat','features'],['f_steps','steps'],['f_faq','faq'],['f_stat','status'],['f_pl','players'],['f_ranks','ranks'],['f_keys','keys'],['f_don','donasi'],['f_svc','services'],['f_order','order']].forEach(([i,k])=>{$(i).value=site[k]||''});
   $('fo').hidden=!isOwner;$('as').hidden=!canEdit;
   if(isOwner){
   const rl=$('rl');rl.textContent='';
@@ -325,21 +359,21 @@ function renderPanel(){
 }
 async function load(){
   try{
-    const [s,r,p,ss]=await Promise.all([supa.from('site').select('data').eq('id','main').maybeSingle(),supa.from('roles').select('*').order('rank'),supa.from('profiles').select('*'),supa.auth.getSession()]);
+    const [s,r,p,ss,od]=await Promise.all([supa.from('site').select('data').eq('id','main').maybeSingle(),supa.from('roles').select('*').order('rank'),supa.from('profiles').select('*'),supa.auth.getSession(),supa.from('orders').select('*')]);
     const er=s.error||r.error||p.error;if(er)throw er;
     site=(s.data&&s.data.data)||{};
     roles=r.data.map(x=>({id:x.id,name:x.name,rank:x.rank,canEdit:x.can_edit}));
-    allp=p.data;prof=Object.fromEntries(allp.map(x=>[x.id,{name:x.name}]));
+    allp=p.data;ordersOk=!od.error;orders=ordersOk&&Array.isArray(od.data)?od.data:[];prof=Object.fromEntries(allp.map(x=>[x.id,{name:x.name}]));
     staff=allp.filter(x=>x.role_id).map(x=>({id:x.id,roleId:x.role_id}));
     user=ss.data.session&&ss.data.session.user;me=user&&allp.find(x=>x.id===user.id);
     const role=me&&roleOf(me.role_id);isOwner=!!me&&me.role_id==='founder';canEdit=!!(role&&role.canEdit);
-    renderSite();renderStaff();renderPanel();setText($('note'),'');
+    renderSite();renderStaff();renderPanel();renderCart();renderOrders();setText($('note'),'');
   }catch(e){setText($('note'),'Data gagal dimuat: '+((e&&e.message)||'')+'. Cek URL/key Supabase dan schema.sql.')}
 }
 $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(site.ip);$('cp').textContent='Tersalin'}catch(e){$('cp').textContent='Salin manual'}setTimeout(()=>$('cp').textContent='Salin',1500)};
 $('nav').after($('panel'));
 
-$('save').onclick=async()=>{const {error}=await supa.from('site').upsert({id:'main',data:{...site,tagline:$('f_tag').value,ip:$('f_ip').value.trim(),discord:$('f_dc').value.trim(),rules:$('f_rules').value,version:$('f_ver').value.trim(),mode:$('f_mode').value.trim(),features:$('f_feat').value,steps:$('f_steps').value,faq:$('f_faq').value,status:$('f_stat').value.trim(),players:$('f_pl').value.trim(),ranks:$('f_ranks').value,donasi:$('f_don').value,services:$('f_svc').value,order:$('f_order').value}});setText($('msg'),error?'Gagal: '+error.message:'Tersimpan ✓');await load();setTimeout(()=>setText($('msg'),''),2500)};
+$('save').onclick=async()=>{const {error}=await supa.from('site').upsert({id:'main',data:{...site,tagline:$('f_tag').value,ip:$('f_ip').value.trim(),discord:$('f_dc').value.trim(),rules:$('f_rules').value,version:$('f_ver').value.trim(),mode:$('f_mode').value.trim(),features:$('f_feat').value,steps:$('f_steps').value,faq:$('f_faq').value,status:$('f_stat').value.trim(),players:$('f_pl').value.trim(),ranks:$('f_ranks').value,keys:$('f_keys').value,donasi:$('f_don').value,services:$('f_svc').value,order:$('f_order').value}});setText($('msg'),error?'Gagal: '+error.message:'Tersimpan ✓');await load();setTimeout(()=>setText($('msg'),''),2500)};
 $('ar').onclick=()=>{const n=$('nr').value.trim();if(!n)return;$('nr').value='';run(supa.from('roles').insert({id:'r'+Date.now().toString(36),name:n,rank:roles.reduce((a,r)=>Math.max(a,r.rank||0),0)+1,can_edit:false}))};
 $('m_add').onclick=()=>{
   const name=$('m_name').value.trim(),rid=$('m_role').value;
@@ -364,6 +398,94 @@ function cariStaf(){
     b.onclick=()=>run(supa.from('profiles').update({role_id:sel.value}).eq('id',h.id));
     d.append(n,sel,b);out.appendChild(d)})}
 $('sb').onclick=cariStaf;
+
+/* ===== Keranjang & checkout ===== */
+const rupiah=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
+function parsePrice(t){
+  const m=String(t||'').match(/(\d[\d.,]*)\s*(k|rb|ribu|jt|juta)?/i);if(!m)return null;
+  const u=(m[2]||'').toLowerCase();
+  let n=u?parseFloat(m[1].replace(/\./g,'').replace(',','.')):parseFloat(m[1].replace(/[.,]/g,''));
+  if(!isFinite(n))return null;
+  if(u==='k'||u==='rb'||u==='ribu')n*=1000;else if(u==='jt'||u==='juta')n*=1e6;
+  return n}
+function addCart(kind,name,price){
+  const it=cart.find(x=>x.k===kind&&x.n===name);
+  if(it){if(it.q<20)it.q++}else cart.push({k:kind,n:name,p:price,q:1});
+  renderCart()}
+function cartTotal(){
+  const ps=cart.map(i=>parsePrice(i.p));
+  return ps.every(x=>x!=null)?cart.reduce((a,i,ix)=>a+ps[ix]*i.q,0):null}
+function renderCart(){
+  const box=$('cart'),n=cart.reduce((a,i)=>a+i.q,0);
+  $('gc').textContent='Keranjang'+(n?' ('+n+')':'');
+  box.textContent='';
+  if(!cart.length){box.textContent='Keranjang kosong. Pilih rank, key, atau layanan di atas.';$('cf').hidden=true;return}
+  $('cf').hidden=false;
+  cart.forEach((it,ix)=>{
+    const d=document.createElement('div');d.className='ci';
+    const l=document.createElement('span');l.style.color='var(--tx)';l.textContent=it.n+' · '+it.k+(it.p?' · '+it.p:'');
+    const q=document.createElement('span');q.className='qt';
+    const mk=(txt,cls,fn)=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=txt;b.onclick=fn;return b};
+    const c=document.createElement('span');c.textContent=it.q;c.style.minWidth='1.5em';c.style.textAlign='center';c.style.color='var(--tx)';
+    q.append(mk('−','g sm',()=>{it.q--;if(it.q<1)cart.splice(ix,1);renderCart()}),c,mk('+','g sm',()=>{if(it.q<20){it.q++;renderCart()}}),mk('Hapus','r sm',()=>{cart.splice(ix,1);renderCart()}));
+    d.append(l,q);box.appendChild(d)});
+  const tot=cartTotal();
+  setText($('o_tot'),tot==null?'Total: dikonfirmasi admin':'Total perkiraan: '+rupiah(tot));
+  $('o_go').textContent=user?'Kirim pesanan':'Masuk untuk memesan';
+  $('o_go').disabled=false}
+const STATUS={baru:'Baru · menunggu pembayaran',dibayar:'Dibayar',selesai:'Selesai',batal:'Dibatalkan'};
+const kodeOf=o=>String(o.id).slice(0,8).toUpperCase();
+const ringkas=o=>(Array.isArray(o.items)?o.items:[]).map(i=>(i.nama||'')+(i.jumlah>1?' ×'+i.jumlah:'')).join(', ');
+const tgl=o=>{try{return new Date(o.created_at).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'})}catch(e){return ''}};
+function renderOrders(){
+  const sorted=[...orders].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
+  const mine=user?sorted.filter(o=>o.user_id===user.id):[];
+  $('myc').hidden=!mine.length;
+  const mo=$('myord');mo.textContent='';
+  mine.forEach(o=>{
+    const d=document.createElement('div');d.className='od';
+    const h=document.createElement('div');
+    const k=document.createElement('span');k.className='tag';k.textContent=kodeOf(o);
+    const st=document.createElement('span');st.textContent=' '+(STATUS[o.status]||o.status);
+    h.append(k,st);
+    const t=document.createElement('div');t.className='mu';t.textContent=ringkas(o)+(o.total!=null?' · '+rupiah(o.total):'')+' · '+tgl(o);
+    d.append(h,t);mo.appendChild(d)});
+  $('ao').hidden=!canEdit;
+  if(!canEdit)return;
+  const ol=$('ol');ol.textContent='';
+  if(!ordersOk){ol.textContent='Tabel orders belum dibuat. Jalankan orders.sql di Supabase.';return}
+  if(!sorted.length){ol.textContent='Belum ada pesanan.';return}
+  sorted.forEach(o=>{
+    const d=document.createElement('div');d.className='od';
+    const h=document.createElement('div');
+    const k=document.createElement('span');k.className='tag';k.textContent=kodeOf(o);
+    const nm=document.createElement('b');nm.style.color='var(--tx)';nm.textContent=' '+o.mc_name;
+    h.append(k,nm);
+    const t=document.createElement('div');t.textContent=ringkas(o)+(o.total!=null?' · '+rupiah(o.total):'');
+    const c=document.createElement('div');c.textContent=(o.contact?'Kontak: '+o.contact+' · ':'')+tgl(o)+(o.note?' · Catatan: '+o.note:'');
+    const sel=document.createElement('select');
+    Object.keys(STATUS).forEach(v=>{const op=document.createElement('option');op.value=v;op.textContent=STATUS[v];if(v===o.status)op.selected=true;sel.appendChild(op)});
+    sel.onchange=()=>run(supa.from('orders').update({status:sel.value}).eq('id',o.id));
+    d.append(h,t,c,sel);ol.appendChild(d)})}
+async function kirimPesanan(){
+  if(!user){location.href='login.html';return}
+  const msg=t=>setText($('o_msg'),t);
+  if(!ordersOk){msg('Fitur pesanan belum aktif. Hubungi admin.');return}
+  const mc=$('o_mc').value.trim(),ct=$('o_ct').value.trim(),nt=$('o_nt').value.trim();
+  if(!mc){msg('Isi username Minecraft dulu.');return}
+  if(!ct){msg('Isi kontak Discord/WhatsApp supaya admin bisa menghubungimu.');return}
+  if(!cart.length)return;
+  const id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)});
+  const tot=cartTotal();
+  $('o_go').disabled=true;msg('Mengirim...');
+  const r=await supa.from('orders').insert({id,mc_name:mc,contact:ct,note:nt||null,items:cart.map(i=>({kategori:i.k,nama:i.n,harga:i.p,jumlah:i.q})),total:tot==null?null:Math.round(tot)});
+  $('o_go').disabled=false;
+  if(r.error){msg('Gagal mengirim pesanan: '+(/row-level|policy|401|403/i.test(r.error.message)?'sesi habis, silakan masuk lagi.':r.error.message));return}
+  cart=[];$('o_nt').value='';renderCart();
+  msg('Pesanan terkirim! Kode: '+id.slice(0,8).toUpperCase()+'. Selesaikan pembayaran sesuai info donasi di atas, lalu kirim bukti bayar ke admin sambil menyebut kode ini.');
+  await load()}
+$('gc').onclick=()=>$('co').scrollIntoView({behavior:'smooth',block:'start'});
+$('o_go').onclick=kirimPesanan;
 $('lg').onclick=async()=>{if(user){await supa.auth.signOut()}else{location.href='login.html'}};
 load();
 supa.auth.onAuthStateChange(()=>{setTimeout(load,0)});
