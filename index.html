@@ -478,9 +478,9 @@ async function kirimPesanan(){
   const id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)});
   const tot=cartTotal();
   $('o_go').disabled=true;msg('Mengirim...');
-  const r=await supa.from('orders').insert({id,mc_name:mc,contact:ct,note:nt||null,items:cart.map(i=>({kategori:i.k,nama:i.n,harga:i.p,jumlah:i.q})),total:tot==null?null:Math.round(tot)});
+  const r=await supa.from('orders').insert({id,user_id:user.id,mc_name:mc,contact:ct,note:nt||null,items:cart.map(i=>({kategori:i.k,nama:i.n,harga:i.p,jumlah:i.q})),total:tot==null?null:Math.round(tot)});
   $('o_go').disabled=false;
-  if(r.error){msg('Gagal mengirim pesanan: '+(/row-level|policy|401|403/i.test(r.error.message)?'sesi habis, silakan masuk lagi.':r.error.message));return}
+  if(r.error){msg('Gagal mengirim pesanan: '+(/jwt|expired/i.test(r.error.message)?'sesi habis, silakan masuk lagi.':r.error.message));return}
   cart=[];$('o_nt').value='';renderCart();
   msg('Pesanan terkirim! Kode: '+id.slice(0,8).toUpperCase()+'. Selesaikan pembayaran sesuai info donasi di atas, lalu kirim bukti bayar ke admin sambil menyebut kode ini.');
   await load()}
