@@ -168,11 +168,26 @@ button.sm{padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 var(--bd)}
 <label>FAQ (satu baris: Pertanyaan | Jawaban)</label><textarea id="f_faq"></textarea>
 <label>Status server (Online / Offline / Maintenance)</label><input type="text" id="f_stat">
 <label>Pemain online (contoh: 12/100)</label><input type="text" id="f_pl">
+<h2 style="margin-top:20px">Kelola produk donasi</h2>
+<div class="mu" style="font-size:.9rem">Tambah, ubah, atau hapus Rank, Key, dan Layanan. Setiap perubahan langsung tersimpan dan tampil di halaman Donasi.</div>
+<div class="row" id="pm_tabs"></div>
+<div id="pm_list"></div>
+<div class="card" style="margin:12px 0">
+<b id="pm_title">Tambah produk</b>
+<div id="pm_catrow" hidden><label for="pm_cat">Kategori layanan (mis. Build, Plugin)</label><input type="text" id="pm_cat" maxlength="40" list="pm_cats" autocomplete="off"><datalist id="pm_cats"></datalist></div>
+<label for="pm_name">Nama produk</label><input type="text" id="pm_name" maxlength="40" autocomplete="off">
+<label for="pm_price">Harga (Rupiah, angka saja, mis. 25000)</label><input type="text" id="pm_price" inputmode="numeric" autocomplete="off">
+<label for="pm_desc">Keterangan / keuntungan</label><textarea id="pm_desc" maxlength="500" style="min-height:80px"></textarea>
+<div class="row"><button type="button" id="pm_save">Tambah produk</button><button type="button" class="g" id="pm_cancel" hidden>Batal</button></div>
+<div class="mu" id="pm_msg" style="margin-top:6px"></div>
+</div>
+<details><summary>Mode teks lanjutan (edit manual Rank, Key, Layanan)</summary><div>
 <label>Rank (satu baris: Nama | Harga | Keuntungan)</label><textarea id="f_ranks"></textarea>
 <label>Key (satu baris: Nama | Harga | Isi / keterangan)</label><textarea id="f_keys"></textarea>
+<label>Layanan &amp; jasa (satu baris: Kategori | Nama | Harga | Deskripsi)</label><textarea id="f_svc" style="min-height:180px"></textarea>
+</div></details>
 <label>Info donasi / cara bayar (muncul di atas dan setelah checkout)</label><textarea id="f_don"></textarea>
 <label>Metode pembayaran (satu baris: Nama | Detail. Detail bisa nomor, link, atau alamat gambar QRIS seperti qris.png. Kosong = DANA, GoPay, QRIS, Saweria tanpa detail)</label><textarea id="f_pay" placeholder="DANA | 0812xxxx a.n. Nama&#10;GoPay | 0812xxxx a.n. Nama&#10;QRIS | qris.png&#10;Saweria | https://saweria.co/namamu"></textarea>
-<label>Layanan &amp; jasa (satu baris: Kategori | Nama | Harga | Deskripsi)</label><textarea id="f_svc" style="min-height:180px"></textarea>
 <label>Cara pesan layanan</label><textarea id="f_order"></textarea>
 <label>Tagline</label><input type="text" id="f_tag">
 <label>IP server</label><input type="text" id="f_ip" placeholder="play.contoh.com">
@@ -371,11 +386,94 @@ async function load(){
     staff=allp.filter(x=>x.role_id).map(x=>({id:x.id,roleId:x.role_id}));
     user=ss.data.session&&ss.data.session.user;me=user&&allp.find(x=>x.id===user.id);
     const role=me&&roleOf(me.role_id);isOwner=!!me&&me.role_id==='founder';canEdit=!!(role&&role.canEdit);
-    renderSite();renderStaff();renderPanel();renderCart();renderOrders();setText($('note'),'');
+    renderSite();renderStaff();renderPanel();renderPM();renderCart();renderOrders();setText($('note'),'');
   }catch(e){setText($('note'),'Data gagal dimuat: '+((e&&e.message)||'')+'. Cek URL/key Supabase dan schema.sql.')}
 }
 $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(site.ip);$('cp').textContent='Tersalin'}catch(e){$('cp').textContent='Salin manual'}setTimeout(()=>$('cp').textContent='Salin',1500)};
 $('nav').after($('panel'));
+
+/* ---- Kelola produk donasi (Rank / Key / Layanan) ---- */
+const PMK={Rank:{f:'ranks',t:'f_ranks'},Key:{f:'keys',t:'f_keys'},Layanan:{f:'services',t:'f_svc'}};
+let pmKind='Rank',pmEdit=null;
+const pmClean=s=>String(s==null?'':s).replace(/[|\r\n]+/g,' ').replace(/\s+/g,' ').trim();
+const pmParse=(txt,kind)=>String(txt||'').split('\n').map(s=>s.trim()).filter(Boolean).map(l=>{const p=l.split('|').map(x=>x.trim());return kind==='Layanan'?{cat:p[0]||'',name:p[1]||'',price:p[2]||'',desc:p.slice(3).join(' | ')}:{cat:'',name:p[0]||'',price:p[1]||'',desc:p.slice(2).join(' | ')}});
+const pmText=(items,kind)=>items.map(i=>{const a=kind==='Layanan'?[i.cat||'Lainnya',i.name,i.price,i.desc]:[i.name,i.price,i.desc];while(a.length&&!a[a.length-1])a.pop();return a.join(' | ')}).join('\n');
+const pmLc=s=>String(s||'').toLowerCase();
+const pmMsg=t=>setText($('pm_msg'),t);
+async function pmMutate(kind,fn){
+  const s=await supa.from('site').select('data').eq('id','main').maybeSingle();
+  if(s.error){alert('Gagal memuat: '+s.error.message);return false}
+  const cur=(s.data&&s.data.data)||{};
+  const out=fn(pmParse(cur[PMK[kind].f],kind),cur);
+  if(!out)return false;
+  const txt=pmText(out,kind);
+  const r=await supa.from('site').upsert({id:'main',data:{...cur,[PMK[kind].f]:txt}});
+  if(r.error){alert('Gagal: '+r.error.message);return false}
+  site={...cur,[PMK[kind].f]:txt};$(PMK[kind].t).value=txt;
+  renderSite();renderPM();return true}
+async function pmRenameCmd(a,b){
+  const s=await supa.from('site_private').select('data').eq('id','main').maybeSingle();
+  if(s.error){alert('Gagal memuat perintah pengiriman: '+s.error.message);return false}
+  const cur=(s.data&&s.data.data)||{};let hit=false;
+  const txt=String(cur.cmds||'').split('\n').map(l=>{const i=l.indexOf('|');if(i>0&&pmLc(l.slice(0,i).trim())===pmLc(a)){hit=true;return b+' |'+l.slice(i+1)}return l}).join('\n');
+  if(!hit)return false;
+  const r=await supa.from('site_private').upsert({id:'main',data:{...cur,cmds:txt}});
+  if(r.error){alert('Gagal: '+r.error.message);return false}
+  cmdsText=txt;$('f_cmds').value=txt;return true}
+const pmHasCmd=n=>cmdsText.split('\n').some(l=>{const i=l.indexOf('|');return i>0&&pmLc(l.slice(0,i).trim())===pmLc(n)});
+function pmReset(){pmEdit=null;['pm_name','pm_price','pm_desc','pm_cat'].forEach(i=>$(i).value='');$('pm_title').textContent='Tambah produk';$('pm_save').textContent='Tambah produk';$('pm_cancel').hidden=true;pmMsg('')}
+function pmEditStart(it){
+  pmEdit=it.name;$('pm_name').value=it.name;const n=parsePrice(it.price);$('pm_price').value=n!=null?String(Math.round(n)):it.price;
+  $('pm_desc').value=it.desc;$('pm_cat').value=it.cat;$('pm_title').textContent='Ubah produk: '+it.name;$('pm_save').textContent='Simpan perubahan';$('pm_cancel').hidden=false;pmMsg('');
+  try{$('pm_name').scrollIntoView({block:'center'})}catch(e){}$('pm_name').focus()}
+async function pmDel(name){
+  if(!confirm('Hapus "'+name+'" dari daftar?'))return;
+  const ok=await pmMutate(pmKind,items=>items.filter(x=>pmLc(x.name)!==pmLc(name)));
+  if(ok&&pmEdit&&pmLc(pmEdit)===pmLc(name))pmReset()}
+async function pmMove(name,d){
+  await pmMutate(pmKind,items=>{const i=items.findIndex(x=>pmLc(x.name)===pmLc(name)),j=i+d;if(i<0||j<0||j>=items.length)return null;[items[i],items[j]]=[items[j],items[i]];return items})}
+$('pm_cancel').onclick=pmReset;
+$('pm_save').onclick=async()=>{
+  const kind=pmKind,old=pmEdit,name=pmClean($('pm_name').value),desc=pmClean($('pm_desc').value),cat=pmClean($('pm_cat').value)||'Lainnya',n=parsePrice($('pm_price').value);
+  if(!name){pmMsg('Nama produk wajib diisi.');return}
+  if(n==null||!(n>0)){pmMsg('Harga tidak valid. Isi angka, mis. 25000.');return}
+  const item={cat,name,price:rupiah(n),desc};
+  $('pm_save').disabled=true;pmMsg('Menyimpan…');
+  const ok=await pmMutate(kind,(items,cur)=>{
+    const same=items.filter(x=>!old||pmLc(x.name)!==pmLc(old));
+    const oth=kind==='Layanan'?[]:pmParse(cur[kind==='Rank'?'keys':'ranks'],kind==='Rank'?'Key':'Rank');
+    if(same.concat(oth).some(x=>pmLc(x.name)===pmLc(name))){pmMsg('Nama "'+name+'" sudah dipakai produk lain.');return null}
+    if(old){const i=items.findIndex(x=>pmLc(x.name)===pmLc(old));if(i<0){pmMsg('Produk asli tidak ditemukan (mungkin sudah dihapus staf lain).');return null}items[i]=item}else items.push(item);
+    return items});
+  $('pm_save').disabled=false;if(!ok)return;
+  let extra='';
+  if(kind!=='Layanan'){
+    if(old&&pmLc(old)!==pmLc(name)){
+      if(isOwner){extra=(await pmRenameCmd(old,name))?' Perintah pengiriman ikut diganti ke nama baru.':''}
+      else extra=' Nama diubah: minta Founder menyesuaikan perintah pengiriman.';
+    }else if(!old&&!(isOwner&&pmHasCmd(name)))extra=' Jangan lupa Founder mengisi perintah pengiriman untuk "'+name+'".';
+  }
+  pmReset();pmMsg((old?'Perubahan tersimpan ✓':'Produk ditambahkan ✓')+extra)};
+function renderPM(){
+  if(!canEdit)return;
+  const tb=$('pm_tabs');tb.textContent='';
+  Object.keys(PMK).forEach(k=>{const b=document.createElement('button');b.type='button';b.textContent=k;if(k!==pmKind)b.className='g';b.onclick=()=>{pmKind=k;pmReset();renderPM()};tb.appendChild(b)});
+  $('pm_catrow').hidden=pmKind!=='Layanan';
+  const dl=$('pm_cats');dl.textContent='';[...new Set(pmParse(site.services,'Layanan').map(x=>x.cat).filter(Boolean))].forEach(c=>{const o=document.createElement('option');o.value=c;dl.appendChild(o)});
+  const box=$('pm_list');box.textContent='';const items=pmParse(site[PMK[pmKind].f],pmKind);
+  if(!items.length){const e=document.createElement('div');e.className='mu';e.textContent='Belum ada produk di kategori ini.';box.appendChild(e);return}
+  items.forEach(it=>{
+    const d=document.createElement('div');d.className='card';d.style.margin='8px 0';
+    const h=document.createElement('div');h.className='row';
+    if(pmKind==='Layanan'&&it.cat){const t=document.createElement('span');t.className='tag';t.textContent=it.cat;h.appendChild(t)}
+    const b=document.createElement('b');b.textContent=it.name||'(tanpa nama)';h.appendChild(b);
+    const p=document.createElement('span');p.textContent=it.price;h.appendChild(p);d.appendChild(h);
+    if(it.desc){const t=document.createElement('div');t.className='mu';t.textContent=it.desc;d.appendChild(t)}
+    const r=document.createElement('div');r.className='row';
+    const mk=(txt,cls,fn)=>{const x=document.createElement('button');x.type='button';x.className='sm '+cls;x.textContent=txt;x.onclick=fn;r.appendChild(x)};
+    mk('↑','g',()=>pmMove(it.name,-1));mk('↓','g',()=>pmMove(it.name,1));mk('Ubah','g',()=>pmEditStart(it));mk('Hapus','r',()=>pmDel(it.name));
+    d.appendChild(r);box.appendChild(d)})}
+
 
 $('save').onclick=async()=>{const {error}=await supa.from('site').upsert({id:'main',data:{...site,tagline:$('f_tag').value,ip:$('f_ip').value.trim(),discord:$('f_dc').value.trim(),rules:$('f_rules').value,version:$('f_ver').value.trim(),mode:$('f_mode').value.trim(),features:$('f_feat').value,steps:$('f_steps').value,faq:$('f_faq').value,status:$('f_stat').value.trim(),players:$('f_pl').value.trim(),ranks:$('f_ranks').value,keys:$('f_keys').value,pay:$('f_pay').value,donasi:$('f_don').value,services:$('f_svc').value,order:$('f_order').value}});let er2=null;if(!error&&isOwner){const r2=await supa.from('site_private').upsert({id:'main',data:{cmds:$('f_cmds').value}});er2=r2.error}const ee=error||er2;setText($('msg'),ee?'Gagal: '+ee.message:'Tersimpan ✓');await load();setTimeout(()=>setText($('msg'),''),2500)};
 $('ar').onclick=()=>{const n=$('nr').value.trim();if(!n)return;$('nr').value='';run(supa.from('roles').insert({id:'r'+Date.now().toString(36),name:n,rank:roles.reduce((a,r)=>Math.max(a,r.rank||0),0)+1,can_edit:false}))};
