@@ -22,7 +22,7 @@ const KEY = need('SUPABASE_SERVICE_KEY');
 const RCON = { host: E.RCON_HOST || '127.0.0.1', port: +(E.RCON_PORT || 25575), password: E.RCON_PASSWORD || '' };
 if (!DRY && !RCON.password) { console.error('RCON_PASSWORD belum diisi.'); process.exit(1); }
 const POLL = Math.max(5, +(E.POLL_SECONDS || 15)) * 1000;
-const NAME_RE = new RegExp(E.PLAYER_REGEX || '^[A-Za-z0-9_]{3,16}$');
+const NAME_RE = new RegExp(E.PLAYER_REGEX || '^\\.?[A-Za-z0-9_]{3,16}$');
 const FAIL_RE = new RegExp(E.FAIL_PATTERNS || 'unknown (or incomplete )?command|no player was found|unable to find|could not find|cannot find|does not exist|not online|player not found', 'i');
 
 const log = (...a) => console.log(new Date().toISOString().replace('T', ' ').slice(0, 19), ...a);
