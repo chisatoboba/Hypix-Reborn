@@ -149,7 +149,7 @@ button.sm{padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 var(--bd)}
 <div class="card"><h2>Layanan &amp; Jasa</h2><p class="mu" id="order" style="white-space:pre-wrap"></p></div><div id="svc"></div>
 <div class="card" id="co"><h2>Keranjang</h2><div id="cart" class="mu"></div>
 <div id="cf" hidden>
-<label for="o_mc">Username Minecraft</label><input type="text" id="o_mc" maxlength="32" autocomplete="off" autocapitalize="off" spellcheck="false">
+<label for="o_mc">Username Minecraft</label><input type="text" id="o_mc" maxlength="16" autocomplete="off" autocapitalize="off" spellcheck="false">
 <label for="o_ct">Kontak (Discord / WhatsApp)</label><input type="text" id="o_ct" maxlength="100" autocomplete="off">
 <label for="o_nt">Catatan (opsional)</label><textarea id="o_nt" maxlength="500" style="min-height:70px"></textarea>
 <label>Metode pembayaran</label><div id="o_pay" class="row"></div><div id="o_pd" class="mu" style="margin-top:6px"></div>
@@ -171,7 +171,7 @@ button.sm{padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 var(--bd)}
 <label>Rank (satu baris: Nama | Harga | Keuntungan)</label><textarea id="f_ranks"></textarea>
 <label>Key (satu baris: Nama | Harga | Isi / keterangan)</label><textarea id="f_keys"></textarea>
 <label>Info donasi / cara bayar (muncul di atas dan setelah checkout)</label><textarea id="f_don"></textarea>
-<label>Metode pembayaran (satu baris: Nama | Detail. Detail bisa nomor, link, atau alamat gambar QRIS seperti qris.png. Kosong = DANA, GoPay, QRIS, Saweria tanpa detail)</label><textarea id="f_pay" placeholder="DANA | 081996112019 a.n. Nama&#10;GoPay | 081996112019 a.n. Nama&#10;QRIS | Delynnqris.jpg&#10;Saweria | https://saweria.co/hypixreborn"></textarea>
+<label>Metode pembayaran (satu baris: Nama | Detail. Detail bisa nomor, link, atau alamat gambar QRIS seperti qris.png. Kosong = DANA, GoPay, QRIS, Saweria tanpa detail)</label><textarea id="f_pay" placeholder="DANA | 0812xxxx a.n. Nama&#10;GoPay | 0812xxxx a.n. Nama&#10;QRIS | qris.png&#10;Saweria | https://saweria.co/namamu"></textarea>
 <label>Layanan &amp; jasa (satu baris: Kategori | Nama | Harga | Deskripsi)</label><textarea id="f_svc" style="min-height:180px"></textarea>
 <label>Cara pesan layanan</label><textarea id="f_order"></textarea>
 <label>Tagline</label><input type="text" id="f_tag">
@@ -181,6 +181,7 @@ button.sm{padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 var(--bd)}
 <div class="row"><button id="save">Simpan</button><span class="mu" id="msg"></span></div>
 <div id="ao" hidden><h2 style="margin-top:20px">Pesanan masuk</h2><div id="ol" class="mu">Belum ada pesanan.</div></div>
 <div id="fo" hidden>
+<h2 style="margin-top:20px">Pengiriman otomatis</h2><label>Perintah pengiriman (satu baris: Nama produk | perintah). Pakai {player} untuk username pembeli dan {qty} untuk jumlah. Awali perintah dengan @online kalau pemain harus sedang online. Nama produk harus sama persis dengan di daftar Rank/Key.</label><textarea id="f_cmds" placeholder="VIP | lp user {player} parent add vip&#10;Vote Key | @online crate key give {player} vote {qty}"></textarea>
 <h2 style="margin-top:20px">Kelola role (khusus founder)</h2><div id="rl"></div>
 <div class="row"><input type="text" id="nr" placeholder="Nama role baru"><button id="ar">Tambah role</button></div>
 </div>
@@ -205,7 +206,7 @@ const $=i=>document.getElementById(i);
 function route(){let h=(location.hash||'#beranda').slice(1);if(h==='rank'||h==='layanan')h='donasi';const p=['beranda','donasi','admin'].includes(h)?h:'beranda';document.body.dataset.tab=p;document.querySelectorAll('[data-p]').forEach(e=>e.hidden=e.dataset.p!==p||(p==='admin'&&!window.CAN));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p))}
 addEventListener('hashchange',route);route();
 document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();try{history.replaceState(null,'',a.getAttribute('href'))}catch(x){location.hash=a.getAttribute('href')}route();window.scrollTo(0,0)}));
-let user=null,me=null,site={},roles=[],staff=[],prof={},isOwner=false,canEdit=false,orders=[],ordersOk=true,cart=[];
+let user=null,me=null,site={},roles=[],staff=[],prof={},isOwner=false,canEdit=false,orders=[],ordersOk=true,cart=[],cmdsText='';
 const esc=s=>String(s==null?'':s);
 function setText(el,t){el.textContent=esc(t)}
 function prod(kind,name,price,desc){
@@ -315,6 +316,7 @@ function renderPanel(){
   $('lg').textContent=user?'Keluar':'Masuk';
   window.CAN=canEdit;$('nav_admin').hidden=!canEdit;route();
   if(canEdit&&!$('panel').contains(document.activeElement))[['f_tag','tagline'],['f_ip','ip'],['f_dc','discord'],['f_rules','rules'],['f_ver','version'],['f_mode','mode'],['f_feat','features'],['f_steps','steps'],['f_faq','faq'],['f_stat','status'],['f_pl','players'],['f_ranks','ranks'],['f_keys','keys'],['f_pay','pay'],['f_don','donasi'],['f_svc','services'],['f_order','order']].forEach(([i,k])=>{$(i).value=site[k]||''});
+  if(isOwner&&!$('panel').contains(document.activeElement))$('f_cmds').value=cmdsText;
   $('fo').hidden=!isOwner;$('as').hidden=!canEdit;
   if(isOwner){
   const rl=$('rl');rl.textContent='';
@@ -361,11 +363,11 @@ function renderPanel(){
 }
 async function load(){
   try{
-    const [s,r,p,ss,od]=await Promise.all([supa.from('site').select('data').eq('id','main').maybeSingle(),supa.from('roles').select('*').order('rank'),supa.from('profiles').select('*'),supa.auth.getSession(),supa.from('orders').select('*')]);
+    const [s,r,p,ss,od,pc]=await Promise.all([supa.from('site').select('data').eq('id','main').maybeSingle(),supa.from('roles').select('*').order('rank'),supa.from('profiles').select('*'),supa.auth.getSession(),supa.from('orders').select('*'),supa.from('site_private').select('data').eq('id','main').maybeSingle()]);
     const er=s.error||r.error||p.error;if(er)throw er;
     site=(s.data&&s.data.data)||{};
     roles=r.data.map(x=>({id:x.id,name:x.name,rank:x.rank,canEdit:x.can_edit}));
-    allp=p.data;ordersOk=!od.error;orders=ordersOk&&Array.isArray(od.data)?od.data:[];prof=Object.fromEntries(allp.map(x=>[x.id,{name:x.name}]));
+    cmdsText=(pc&&!pc.error&&pc.data&&pc.data.data&&pc.data.data.cmds)||'';allp=p.data;ordersOk=!od.error;orders=ordersOk&&Array.isArray(od.data)?od.data:[];prof=Object.fromEntries(allp.map(x=>[x.id,{name:x.name}]));
     staff=allp.filter(x=>x.role_id).map(x=>({id:x.id,roleId:x.role_id}));
     user=ss.data.session&&ss.data.session.user;me=user&&allp.find(x=>x.id===user.id);
     const role=me&&roleOf(me.role_id);isOwner=!!me&&me.role_id==='founder';canEdit=!!(role&&role.canEdit);
@@ -375,7 +377,7 @@ async function load(){
 $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(site.ip);$('cp').textContent='Tersalin'}catch(e){$('cp').textContent='Salin manual'}setTimeout(()=>$('cp').textContent='Salin',1500)};
 $('nav').after($('panel'));
 
-$('save').onclick=async()=>{const {error}=await supa.from('site').upsert({id:'main',data:{...site,tagline:$('f_tag').value,ip:$('f_ip').value.trim(),discord:$('f_dc').value.trim(),rules:$('f_rules').value,version:$('f_ver').value.trim(),mode:$('f_mode').value.trim(),features:$('f_feat').value,steps:$('f_steps').value,faq:$('f_faq').value,status:$('f_stat').value.trim(),players:$('f_pl').value.trim(),ranks:$('f_ranks').value,keys:$('f_keys').value,pay:$('f_pay').value,donasi:$('f_don').value,services:$('f_svc').value,order:$('f_order').value}});setText($('msg'),error?'Gagal: '+error.message:'Tersimpan ✓');await load();setTimeout(()=>setText($('msg'),''),2500)};
+$('save').onclick=async()=>{const {error}=await supa.from('site').upsert({id:'main',data:{...site,tagline:$('f_tag').value,ip:$('f_ip').value.trim(),discord:$('f_dc').value.trim(),rules:$('f_rules').value,version:$('f_ver').value.trim(),mode:$('f_mode').value.trim(),features:$('f_feat').value,steps:$('f_steps').value,faq:$('f_faq').value,status:$('f_stat').value.trim(),players:$('f_pl').value.trim(),ranks:$('f_ranks').value,keys:$('f_keys').value,pay:$('f_pay').value,donasi:$('f_don').value,services:$('f_svc').value,order:$('f_order').value}});let er2=null;if(!error&&isOwner){const r2=await supa.from('site_private').upsert({id:'main',data:{cmds:$('f_cmds').value}});er2=r2.error}const ee=error||er2;setText($('msg'),ee?'Gagal: '+ee.message:'Tersimpan ✓');await load();setTimeout(()=>setText($('msg'),''),2500)};
 $('ar').onclick=()=>{const n=$('nr').value.trim();if(!n)return;$('nr').value='';run(supa.from('roles').insert({id:'r'+Date.now().toString(36),name:n,rank:roles.reduce((a,r)=>Math.max(a,r.rank||0),0)+1,can_edit:false}))};
 $('m_add').onclick=()=>{
   const name=$('m_name').value.trim(),rid=$('m_role').value;
@@ -490,6 +492,8 @@ function renderCart(){
   $('o_go').textContent=user?'Kirim pesanan':'Masuk untuk memesan';
   $('o_go').disabled=false}
 const STATUS={baru:'Baru · menunggu pembayaran',dibayar:'Dibayar',selesai:'Selesai',batal:'Dibatalkan'};
+const DLV={pending:'Menunggu dikirim ke server',processing:'Sedang dikirim ke server',done:'Terkirim ke server ✓',failed:'Gagal dikirim'};
+function delivLabel(o,admin){if(!o.delivery||o.delivery==='none')return '';return o.delivery==='failed'&&!admin?'Gagal dikirim otomatis, admin akan memeriksa':DLV[o.delivery]||''}
 const kodeOf=o=>String(o.id).slice(0,8).toUpperCase();
 const ringkas=o=>(Array.isArray(o.items)?o.items:[]).map(i=>(i.nama||'')+(i.jumlah>1?' ×'+i.jumlah:'')).join(', ');
 const tgl=o=>{try{return new Date(o.created_at).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'})}catch(e){return ''}};
@@ -505,7 +509,7 @@ function renderOrders(){
     const st=document.createElement('span');st.textContent=' '+(STATUS[o.status]||o.status);
     h.append(k,st);
     const t=document.createElement('div');t.className='mu';t.textContent=ringkas(o)+(o.total!=null?' · '+rupiah(o.total):'')+(o.payment?' · '+o.payment:'')+' · '+tgl(o);
-    d.append(h,t);mo.appendChild(d)});
+    d.append(h,t);const dl=delivLabel(o);if(dl){const x=document.createElement('div');x.className='mu';x.textContent=dl;d.appendChild(x)}mo.appendChild(d)});
   $('ao').hidden=!canEdit;
   if(!canEdit)return;
   const ol=$('ol');ol.textContent='';
@@ -522,13 +526,16 @@ function renderOrders(){
     const sel=document.createElement('select');
     Object.keys(STATUS).forEach(v=>{const op=document.createElement('option');op.value=v;op.textContent=STATUS[v];if(v===o.status)op.selected=true;sel.appendChild(op)});
     sel.onchange=()=>run(supa.from('orders').update({status:sel.value}).eq('id',o.id));
-    d.append(h,t,c,sel);ol.appendChild(d)})}
+    d.append(h,t,c);const dl=delivLabel(o,true);if(dl){const x=document.createElement('div');x.textContent=dl+(o.delivery_note?' · '+o.delivery_note:'');d.appendChild(x)}d.appendChild(sel);
+    if(o.delivery==='failed'){const rb=document.createElement('button');rb.type='button';rb.className='g sm';rb.style.marginLeft='8px';rb.textContent='Kirim ulang';rb.onclick=()=>run(supa.from('orders').update({delivery:'pending'}).eq('id',o.id));d.appendChild(rb)}
+    ol.appendChild(d)})}
 async function kirimPesanan(){
   if(!user){location.href='login.html';return}
   const msg=t=>setText($('o_msg'),t);
   if(!ordersOk){msg('Fitur pesanan belum aktif. Hubungi admin.');return}
   const mc=$('o_mc').value.trim(),ct=$('o_ct').value.trim(),nt=$('o_nt').value.trim();
   if(!mc){msg('Isi username Minecraft dulu.');return}
+  if(!/^[A-Za-z0-9_]{3,16}$/.test(mc)){msg('Username Minecraft (Java) harus 3-16 karakter: huruf, angka, atau underscore (_), tanpa spasi.');return}
   if(!ct){msg('Isi kontak Discord/WhatsApp supaya admin bisa menghubungimu.');return}
   if(!cart.length)return;
   if(!payMethod){msg('Pilih metode pembayaran dulu.');return}
