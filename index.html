@@ -149,7 +149,7 @@ button.sm{padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 var(--bd)}
 <div class="card"><h2>Layanan &amp; Jasa</h2><p class="mu" id="order" style="white-space:pre-wrap"></p></div><div id="svc"></div>
 <div class="card" id="co"><h2>Keranjang</h2><div id="cart" class="mu"></div>
 <div id="cf" hidden>
-<label for="o_mc">Username Minecraft</label><input type="text" id="o_mc" maxlength="16" autocomplete="off" autocapitalize="off" spellcheck="false">
+<label for="o_mc">Username Minecraft</label><input type="text" id="o_mc" maxlength="17" autocomplete="off" autocapitalize="off" spellcheck="false">
 <label for="o_ct">Kontak (Discord / WhatsApp)</label><input type="text" id="o_ct" maxlength="100" autocomplete="off">
 <label for="o_nt">Catatan (opsional)</label><textarea id="o_nt" maxlength="500" style="min-height:70px"></textarea>
 <label>Metode pembayaran</label><div id="o_pay" class="row"></div><div id="o_pd" class="mu" style="margin-top:6px"></div>
@@ -535,7 +535,7 @@ async function kirimPesanan(){
   if(!ordersOk){msg('Fitur pesanan belum aktif. Hubungi admin.');return}
   const mc=$('o_mc').value.trim(),ct=$('o_ct').value.trim(),nt=$('o_nt').value.trim();
   if(!mc){msg('Isi username Minecraft dulu.');return}
-  if(!/^[A-Za-z0-9_]{3,16}$/.test(mc)){msg('Username Minecraft (Java) harus 3-16 karakter: huruf, angka, atau underscore (_), tanpa spasi.');return}
+  if(!/^\.?[A-Za-z0-9_]{3,16}$/.test(mc)){msg('Username Minecraft harus 3-16 karakter: huruf, angka, atau underscore (_), tanpa spasi. Pemain Bedrock awali dengan titik, mis. .Steve123 (spasi di gamertag diganti _).');return}
   if(!ct){msg('Isi kontak Discord/WhatsApp supaya admin bisa menghubungimu.');return}
   if(!cart.length)return;
   if(!payMethod){msg('Pilih metode pembayaran dulu.');return}
