@@ -152,6 +152,7 @@ button.sm{padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 var(--bd)}
 <label for="o_mc">Username Minecraft</label><input type="text" id="o_mc" maxlength="32" autocomplete="off" autocapitalize="off" spellcheck="false">
 <label for="o_ct">Kontak (Discord / WhatsApp)</label><input type="text" id="o_ct" maxlength="100" autocomplete="off">
 <label for="o_nt">Catatan (opsional)</label><textarea id="o_nt" maxlength="500" style="min-height:70px"></textarea>
+<label>Metode pembayaran</label><div id="o_pay" class="row"></div><div id="o_pd" class="mu" style="margin-top:6px"></div>
 <div id="o_tot" style="margin-top:14px;font-weight:600"></div>
 <button id="o_go" type="button" style="width:100%;margin-top:12px">Kirim pesanan</button>
 </div>
@@ -170,6 +171,7 @@ button.sm{padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 var(--bd)}
 <label>Rank (satu baris: Nama | Harga | Keuntungan)</label><textarea id="f_ranks"></textarea>
 <label>Key (satu baris: Nama | Harga | Isi / keterangan)</label><textarea id="f_keys"></textarea>
 <label>Info donasi / cara bayar (muncul di atas dan setelah checkout)</label><textarea id="f_don"></textarea>
+<label>Metode pembayaran (satu baris: Nama | Detail. Detail bisa nomor, link, atau alamat gambar QRIS seperti qris.png. Kosong = DANA, GoPay, QRIS, Saweria tanpa detail)</label><textarea id="f_pay" placeholder="DANA | 0812xxxx a.n. Nama&#10;GoPay | 0812xxxx a.n. Nama&#10;QRIS | qris.png&#10;Saweria | https://saweria.co/namamu"></textarea>
 <label>Layanan &amp; jasa (satu baris: Kategori | Nama | Harga | Deskripsi)</label><textarea id="f_svc" style="min-height:180px"></textarea>
 <label>Cara pesan layanan</label><textarea id="f_order"></textarea>
 <label>Tagline</label><input type="text" id="f_tag">
@@ -312,7 +314,7 @@ function renderPanel(){
   setText($('who'),me?(me.name||'Anggota')+' · '+(role?role.name:'Pengunjung'):'');
   $('lg').textContent=user?'Keluar':'Masuk';
   window.CAN=canEdit;$('nav_admin').hidden=!canEdit;route();
-  if(canEdit&&!$('panel').contains(document.activeElement))[['f_tag','tagline'],['f_ip','ip'],['f_dc','discord'],['f_rules','rules'],['f_ver','version'],['f_mode','mode'],['f_feat','features'],['f_steps','steps'],['f_faq','faq'],['f_stat','status'],['f_pl','players'],['f_ranks','ranks'],['f_keys','keys'],['f_don','donasi'],['f_svc','services'],['f_order','order']].forEach(([i,k])=>{$(i).value=site[k]||''});
+  if(canEdit&&!$('panel').contains(document.activeElement))[['f_tag','tagline'],['f_ip','ip'],['f_dc','discord'],['f_rules','rules'],['f_ver','version'],['f_mode','mode'],['f_feat','features'],['f_steps','steps'],['f_faq','faq'],['f_stat','status'],['f_pl','players'],['f_ranks','ranks'],['f_keys','keys'],['f_pay','pay'],['f_don','donasi'],['f_svc','services'],['f_order','order']].forEach(([i,k])=>{$(i).value=site[k]||''});
   $('fo').hidden=!isOwner;$('as').hidden=!canEdit;
   if(isOwner){
   const rl=$('rl');rl.textContent='';
@@ -373,7 +375,7 @@ async function load(){
 $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(site.ip);$('cp').textContent='Tersalin'}catch(e){$('cp').textContent='Salin manual'}setTimeout(()=>$('cp').textContent='Salin',1500)};
 $('nav').after($('panel'));
 
-$('save').onclick=async()=>{const {error}=await supa.from('site').upsert({id:'main',data:{...site,tagline:$('f_tag').value,ip:$('f_ip').value.trim(),discord:$('f_dc').value.trim(),rules:$('f_rules').value,version:$('f_ver').value.trim(),mode:$('f_mode').value.trim(),features:$('f_feat').value,steps:$('f_steps').value,faq:$('f_faq').value,status:$('f_stat').value.trim(),players:$('f_pl').value.trim(),ranks:$('f_ranks').value,keys:$('f_keys').value,donasi:$('f_don').value,services:$('f_svc').value,order:$('f_order').value}});setText($('msg'),error?'Gagal: '+error.message:'Tersimpan ✓');await load();setTimeout(()=>setText($('msg'),''),2500)};
+$('save').onclick=async()=>{const {error}=await supa.from('site').upsert({id:'main',data:{...site,tagline:$('f_tag').value,ip:$('f_ip').value.trim(),discord:$('f_dc').value.trim(),rules:$('f_rules').value,version:$('f_ver').value.trim(),mode:$('f_mode').value.trim(),features:$('f_feat').value,steps:$('f_steps').value,faq:$('f_faq').value,status:$('f_stat').value.trim(),players:$('f_pl').value.trim(),ranks:$('f_ranks').value,keys:$('f_keys').value,pay:$('f_pay').value,donasi:$('f_don').value,services:$('f_svc').value,order:$('f_order').value}});setText($('msg'),error?'Gagal: '+error.message:'Tersimpan ✓');await load();setTimeout(()=>setText($('msg'),''),2500)};
 $('ar').onclick=()=>{const n=$('nr').value.trim();if(!n)return;$('nr').value='';run(supa.from('roles').insert({id:'r'+Date.now().toString(36),name:n,rank:roles.reduce((a,r)=>Math.max(a,r.rank||0),0)+1,can_edit:false}))};
 $('m_add').onclick=()=>{
   const name=$('m_name').value.trim(),rid=$('m_role').value;
@@ -400,6 +402,21 @@ function cariStaf(){
 $('sb').onclick=cariStaf;
 
 /* ===== Keranjang & checkout ===== */
+let payMethod='';
+function payList(){
+  const a=(site.pay||'').split('\n').map(x=>x.trim()).filter(Boolean).map(l=>{const i=l.indexOf('|');return i<0?{n:l,d:''}:{n:l.slice(0,i).trim(),d:l.slice(i+1).trim()}}).filter(x=>x.n);
+  return a.length?a:['DANA','GoPay','QRIS','Saweria'].map(n=>({n,d:''}))}
+function payDetail(el,m){
+  el.textContent='';
+  const x=payList().find(q=>q.n===m);if(!x||!x.d)return;
+  if(/\.(png|jpe?g|webp|gif)(\?.*)?$/i.test(x.d)){const im=document.createElement('img');im.src=x.d;im.alt='QR '+m;im.style.cssText='max-width:260px;width:100%;border-radius:12px;border:1px solid var(--bd);display:block;margin-top:8px;background:#fff';el.appendChild(im)}
+  else if(/^https?:\/\//i.test(x.d)){const a=document.createElement('a');a.href=x.d;a.target='_blank';a.rel='noopener';a.textContent=x.d;el.appendChild(a)}
+  else{const t=document.createElement('div');t.style.whiteSpace='pre-wrap';t.textContent=x.d;el.appendChild(t)}}
+function renderPay(){
+  const box=$('o_pay');box.textContent='';const L=payList();
+  if(!L.some(x=>x.n===payMethod))payMethod='';
+  L.forEach(x=>{const b=document.createElement('button');b.type='button';b.className=payMethod===x.n?'':'g';b.textContent=x.n;b.onclick=()=>{payMethod=x.n;renderPay()};box.appendChild(b)});
+  payDetail($('o_pd'),payMethod)}
 const rupiah=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
 function parsePrice(t){
   const m=String(t||'').match(/(\d[\d.,]*)\s*(k|rb|ribu|jt|juta)?/i);if(!m)return null;
@@ -420,7 +437,7 @@ function renderCart(){
   $('gc').textContent='Keranjang'+(n?' ('+n+')':'');
   box.textContent='';
   if(!cart.length){box.textContent='Keranjang kosong. Pilih rank, key, atau layanan di atas.';$('cf').hidden=true;return}
-  $('cf').hidden=false;
+  $('cf').hidden=false;renderPay();
   cart.forEach((it,ix)=>{
     const d=document.createElement('div');d.className='ci';
     const l=document.createElement('span');l.style.color='var(--tx)';l.textContent=it.n+' · '+it.k+(it.p?' · '+it.p:'');
@@ -448,7 +465,7 @@ function renderOrders(){
     const k=document.createElement('span');k.className='tag';k.textContent=kodeOf(o);
     const st=document.createElement('span');st.textContent=' '+(STATUS[o.status]||o.status);
     h.append(k,st);
-    const t=document.createElement('div');t.className='mu';t.textContent=ringkas(o)+(o.total!=null?' · '+rupiah(o.total):'')+' · '+tgl(o);
+    const t=document.createElement('div');t.className='mu';t.textContent=ringkas(o)+(o.total!=null?' · '+rupiah(o.total):'')+(o.payment?' · '+o.payment:'')+' · '+tgl(o);
     d.append(h,t);mo.appendChild(d)});
   $('ao').hidden=!canEdit;
   if(!canEdit)return;
@@ -461,7 +478,7 @@ function renderOrders(){
     const k=document.createElement('span');k.className='tag';k.textContent=kodeOf(o);
     const nm=document.createElement('b');nm.style.color='var(--tx)';nm.textContent=' '+o.mc_name;
     h.append(k,nm);
-    const t=document.createElement('div');t.textContent=ringkas(o)+(o.total!=null?' · '+rupiah(o.total):'');
+    const t=document.createElement('div');t.textContent=ringkas(o)+(o.total!=null?' · '+rupiah(o.total):'')+(o.payment?' · via '+o.payment:'');
     const c=document.createElement('div');c.textContent=(o.contact?'Kontak: '+o.contact+' · ':'')+tgl(o)+(o.note?' · Catatan: '+o.note:'');
     const sel=document.createElement('select');
     Object.keys(STATUS).forEach(v=>{const op=document.createElement('option');op.value=v;op.textContent=STATUS[v];if(v===o.status)op.selected=true;sel.appendChild(op)});
@@ -475,14 +492,18 @@ async function kirimPesanan(){
   if(!mc){msg('Isi username Minecraft dulu.');return}
   if(!ct){msg('Isi kontak Discord/WhatsApp supaya admin bisa menghubungimu.');return}
   if(!cart.length)return;
+  if(!payMethod){msg('Pilih metode pembayaran dulu.');return}
+  const pm=payMethod;
   const id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)});
   const tot=cartTotal();
   $('o_go').disabled=true;msg('Mengirim...');
-  const r=await supa.from('orders').insert({id,user_id:user.id,mc_name:mc,contact:ct,note:nt||null,items:cart.map(i=>({kategori:i.k,nama:i.n,harga:i.p,jumlah:i.q})),total:tot==null?null:Math.round(tot)});
+  const r=await supa.from('orders').insert({id,user_id:user.id,payment:pm,mc_name:mc,contact:ct,note:nt||null,items:cart.map(i=>({kategori:i.k,nama:i.n,harga:i.p,jumlah:i.q})),total:tot==null?null:Math.round(tot)});
   $('o_go').disabled=false;
   if(r.error){msg('Gagal mengirim pesanan: '+(/jwt|expired/i.test(r.error.message)?'sesi habis, silakan masuk lagi.':r.error.message));return}
   cart=[];$('o_nt').value='';renderCart();
-  msg('Pesanan terkirim! Kode: '+id.slice(0,8).toUpperCase()+'. Selesaikan pembayaran sesuai info donasi di atas, lalu kirim bukti bayar ke admin sambil menyebut kode ini.');
+  payMethod='';renderPay();
+  msg('Pesanan terkirim! Kode: '+id.slice(0,8).toUpperCase()+'. Bayar lewat '+pm+' sesuai petunjuk di bawah, lalu kirim bukti bayar ke admin sambil menyebut kode ini.');
+  const dv=document.createElement('div');dv.style.marginTop='8px';payDetail(dv,pm);$('o_msg').appendChild(dv);
   await load()}
 $('gc').onclick=()=>$('co').scrollIntoView({behavior:'smooth',block:'start'});
 $('o_go').onclick=kirimPesanan;
