@@ -595,6 +595,37 @@ function delivLabel(o,admin){if(!o.delivery||o.delivery==='none')return '';retur
 const kodeOf=o=>String(o.id).slice(0,8).toUpperCase();
 const ringkas=o=>(Array.isArray(o.items)?o.items:[]).map(i=>(i.nama||'')+(i.jumlah>1?' ×'+i.jumlah:'')).join(', ');
 const tgl=o=>{try{return new Date(o.created_at).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'})}catch(e){return ''}};
+
+function buktiBox(o){
+  const w=document.createElement('div');w.style.marginTop='8px';
+  const info=document.createElement('div');info.className='mu';
+  if(o.proof_status==='rejected'&&o.proof_note)info.textContent='⚠ '+o.proof_note+((o.proof_attempts||0)>=5?' (batas percobaan habis, hubungi admin)':'');
+  else info.textContent='Upload bukti transfer (JPG/PNG, maks 5 MB). Dicek otomatis: nominal, penerima, tanggal & jam, nomor referensi.';
+  w.appendChild(info);
+  if((o.proof_attempts||0)>=5)return w;
+  const fi=document.createElement('input');fi.type='file';fi.accept='image/jpeg,image/png,image/webp';fi.style.marginTop='6px';
+  const b=document.createElement('button');b.type='button';b.className='g sm';b.textContent='Upload & cek bukti';b.style.marginTop='6px';
+  const m=document.createElement('div');m.className='mu';m.style.marginTop='6px';
+  b.onclick=async()=>{
+    const f=fi.files&&fi.files[0];
+    if(!f){m.textContent='Pilih file bukti dulu.';return}
+    if(!/^image\/(jpeg|png|webp)$/.test(f.type)){m.textContent='Format harus JPG, PNG, atau WEBP.';return}
+    if(f.size>5*1024*1024){m.textContent='File maksimal 5 MB.';return}
+    b.disabled=true;m.textContent='Mengupload & memeriksa bukti… (bisa 10-20 detik)';
+    try{
+      const {data:{session}}=await supa.auth.getSession();
+      if(!session){m.textContent='Sesi habis, silakan masuk lagi.';b.disabled=false;return}
+      const ext=f.type==='image/png'?'png':f.type==='image/webp'?'webp':'jpg';
+      const path=user.id+'/'+o.id+'-'+Date.now()+'.'+ext;
+      const H={apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+session.access_token};
+      const u=await fetch(SUPABASE_URL+'/storage/v1/object/bukti/'+path,{method:'POST',headers:{...H,'Content-Type':f.type},body:f});
+      if(!u.ok){m.textContent='Upload gagal ('+u.status+'). Coba lagi.';b.disabled=false;return}
+      const r=await fetch(SUPABASE_URL+'/functions/v1/verify-proof',{method:'POST',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({order_id:o.id,path})});
+      const j=await r.json().catch(()=>({}));
+      m.textContent=j.message||'Gagal memeriksa bukti.';
+    }catch(e){m.textContent='Error: '+e.message}
+    b.disabled=false;await load()};
+  w.append(fi,b,m);return w}
 function renderOrders(){
   const sorted=[...orders].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
   const mine=user?sorted.filter(o=>o.user_id===user.id):[];
@@ -607,7 +638,7 @@ function renderOrders(){
     const st=document.createElement('span');st.textContent=' '+(STATUS[o.status]||o.status);
     h.append(k,st);
     const t=document.createElement('div');t.className='mu';t.textContent=ringkas(o)+(o.total!=null?' · '+rupiah(o.total):'')+(o.payment?' · '+o.payment:'')+' · '+tgl(o);
-    d.append(h,t);const dl=delivLabel(o);if(dl){const x=document.createElement('div');x.className='mu';x.textContent=dl;d.appendChild(x)}mo.appendChild(d)});
+    d.append(h,t);const dl=delivLabel(o);if(dl){const x=document.createElement('div');x.className='mu';x.textContent=dl;d.appendChild(x)}if(o.status==='baru')d.appendChild(buktiBox(o));mo.appendChild(d)});
   $('ao').hidden=!canEdit;
   if(!canEdit)return;
   const ol=$('ol');ol.textContent='';
@@ -646,7 +677,7 @@ async function kirimPesanan(){
   if(r.error){msg('Gagal mengirim pesanan: '+(/jwt|expired/i.test(r.error.message)?'sesi habis, silakan masuk lagi.':r.error.message));return}
   cart=[];$('o_nt').value='';renderCart();
   payMethod='';renderPay();
-  msg('Pesanan terkirim! Kode: '+id.slice(0,8).toUpperCase()+'. Bayar lewat '+pm+' sesuai petunjuk di bawah, lalu kirim bukti bayar ke admin sambil menyebut kode ini.');
+  msg('Pesanan terkirim! Kode: '+id.slice(0,8).toUpperCase()+'. Bayar lewat '+pm+' sesuai petunjuk di bawah, lalu upload bukti transfer di bagian Pesananmu di bawah.');
   const dv=document.createElement('div');dv.style.marginTop='8px';payDetail(dv,pm);$('o_msg').appendChild(dv);
   await load()}
 $('gc').onclick=()=>$('co').scrollIntoView({behavior:'smooth',block:'start'});
