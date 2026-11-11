@@ -596,6 +596,7 @@ const kodeOf=o=>String(o.id).slice(0,8).toUpperCase();
 const ringkas=o=>(Array.isArray(o.items)?o.items:[]).map(i=>(i.nama||'')+(i.jumlah>1?' ×'+i.jumlah:'')).join(', ');
 const tgl=o=>{try{return new Date(o.created_at).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'})}catch(e){return ''}};
 
+const bmsg={};
 function buktiBox(o){
   const w=document.createElement('div');w.style.marginTop='8px';
   const info=document.createElement('div');info.className='mu';
@@ -605,7 +606,7 @@ function buktiBox(o){
   if((o.proof_attempts||0)>=5)return w;
   const fi=document.createElement('input');fi.type='file';fi.accept='image/jpeg,image/png,image/webp';fi.style.marginTop='6px';
   const b=document.createElement('button');b.type='button';b.className='g sm';b.textContent='Upload & cek bukti';b.style.marginTop='6px';
-  const m=document.createElement('div');m.className='mu';m.style.marginTop='6px';
+  const m=document.createElement('div');m.className='mu';m.style.marginTop='6px';m.textContent=bmsg[o.id]||'';
   b.onclick=async()=>{
     const f=fi.files&&fi.files[0];
     if(!f){m.textContent='Pilih file bukti dulu.';return}
@@ -622,8 +623,8 @@ function buktiBox(o){
       if(!u.ok){m.textContent='Upload gagal ('+u.status+'). Coba lagi.';b.disabled=false;return}
       const r=await fetch(SUPABASE_URL+'/functions/v1/verify-proof',{method:'POST',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({order_id:o.id,path})});
       const j=await r.json().catch(()=>({}));
-      m.textContent=j.message||'Gagal memeriksa bukti.';
-    }catch(e){m.textContent='Error: '+e.message}
+      m.textContent=j.message||'Gagal memeriksa bukti.';bmsg[o.id]=m.textContent;
+    }catch(e){m.textContent='Error: '+e.message;bmsg[o.id]=m.textContent}
     b.disabled=false;await load()};
   w.append(fi,b,m);return w}
 function renderOrders(){
